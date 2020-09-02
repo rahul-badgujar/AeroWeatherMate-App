@@ -1,3 +1,8 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:air_quality_app/api/data/air_quality_data.dart';
+import 'package:air_quality_app/api/network/api_urls.dart';
+import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
 import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/ui/decorations.dart';
@@ -38,6 +43,7 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           children: [
             _buildTopBar(),
+            _updateDataWidget(),
             _buildShortWeatherDetailWidget(),
           ],
         ),
@@ -55,7 +61,9 @@ class _MainPageState extends State<MainPage> {
               Icons.refresh,
               color: Colors.white,
             ),
-            onPressed: null,
+            onPressed: () {
+              HttpClient().fetchData(ApiUrls.nearestCityDataUrl());
+            },
           ),
           Expanded(
             child: Center(
@@ -86,7 +94,8 @@ class _MainPageState extends State<MainPage> {
       margin: EdgeInsets.symmetric(vertical: 8),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
         children: [
           _buildTempWidget(),
           _buildWeatherStatusWidget(),
@@ -98,6 +107,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildTempWidget() {
     return Container(
+      padding: EdgeInsets.only(right: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +116,7 @@ class _MainPageState extends State<MainPage> {
             alignment: Alignment.center,
             child: Text(
               Strings.defaultTemp,
-              style: Theme.of(context).textTheme.headline3,
+              style: Theme.of(context).textTheme.headline4,
             ),
           ),
           Container(
@@ -123,9 +133,10 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildWeatherStatusWidget() {
     return Container(
+      padding: EdgeInsets.only(left: 8),
       child: Text(
         Strings.defaultWeatherStatus,
-        style: Theme.of(context).textTheme.headline4,
+        style: Theme.of(context).textTheme.headline5,
       ),
     );
   }
@@ -178,5 +189,16 @@ class _MainPageState extends State<MainPage> {
             titlePadding: EdgeInsets.all(12),
           );
         });
+  }
+
+  Widget _updateDataWidget() {
+    return SizedBox(
+      height: 16,
+      width: 16,
+      child: CircularProgressIndicator(
+        backgroundColor: Colors.white,
+        strokeWidth: 4,
+      ),
+    );
   }
 }
