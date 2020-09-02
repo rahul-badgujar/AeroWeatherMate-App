@@ -12,6 +12,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  Gradient currentAppGradient;
+  @override
+  void initState() {
+    super.initState();
+    currentAppGradient = WeatherGradients.defaultGradient;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +38,7 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           children: [
             _buildTopBar(),
-            _buildShortDetailWidget(),
+            _buildShortWeatherDetailWidget(),
           ],
         ),
       ),
@@ -41,6 +48,7 @@ class _MainPageState extends State<MainPage> {
   Widget _buildTopBar() {
     return Container(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
             icon: Icon(
@@ -51,9 +59,12 @@ class _MainPageState extends State<MainPage> {
           ),
           Expanded(
             child: Center(
-              child: Text(
-                Strings.defaultCityName,
-                style: Theme.of(context).textTheme.headline5,
+              child: GestureDetector(
+                onTap: () => _showAddressDialog(),
+                child: Text(
+                  Strings.defaultCity,
+                  style: Theme.of(context).textTheme.headline5,
+                ),
               ),
             ),
           ),
@@ -70,14 +81,14 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  _buildShortDetailWidget() {
+  Widget _buildShortWeatherDetailWidget() {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildBigTempWidget(),
+          _buildTempWidget(),
           _buildWeatherStatusWidget(),
         ],
       ),
@@ -85,23 +96,24 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildBigTempWidget() {
+  Widget _buildTempWidget() {
     return Container(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             alignment: Alignment.center,
             child: Text(
               Strings.defaultTemp,
-              style: Theme.of(context).textTheme.headline2,
+              style: Theme.of(context).textTheme.headline3,
             ),
           ),
           Container(
             alignment: Alignment.topLeft,
             child: Text(
               "°" + Strings.defaultTempScale,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headline6,
             ),
           )
         ],
@@ -138,9 +150,33 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  _buildAppBackground() {
+  Widget _buildAppBackground() {
     return Container(
-      decoration: BoxDecoration(gradient: WeatherGradients.defaultGradient),
+      decoration:
+          AppDecorations.gradientBox(gradientTOFill: currentAppGradient),
     );
+  }
+
+  Future<void> _showAddressDialog() {
+    return showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: Text(
+              "Current Location",
+              style: TextStyle(color: Colors.black),
+              textAlign: TextAlign.center,
+            ),
+            children: [
+              Text(
+                "${Strings.defaultPlaceName}, ${Strings.defaultCity}, ${Strings.defaultState}\nPIN: ${Strings.defaultCountryCode} ${Strings.defaultPostalCode}",
+                maxLines: 5,
+              ),
+            ],
+            contentPadding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+            titlePadding: EdgeInsets.all(12),
+          );
+        });
   }
 }

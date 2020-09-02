@@ -6,4 +6,8 @@ class AppIcons {
     Icons.eco,
     color: Colors.white,
   );
+  static const Icon downKey = Icon(
+    Icons.keyboard_arrow_down,
+    color: Colors.white,
+  );
 }
