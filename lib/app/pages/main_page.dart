@@ -1,3 +1,6 @@
+import 'package:air_quality_app/resources/gradients_rsc.dart';
+import 'package:air_quality_app/resources/icons_rsc.dart';
+import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/resources/strings_rsc.dart';
 
@@ -14,9 +17,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            color: Colors.blueGrey,
-          ),
+          _buildAppBackground(),
           _buildInfoScene(widget.appTitle),
         ],
       ),
@@ -26,6 +27,7 @@ class _MainPageState extends State<MainPage> {
   Widget _buildInfoScene(String cityName) {
     return SafeArea(
       child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
           children: [
             _buildTopBar(),
@@ -69,17 +71,17 @@ class _MainPageState extends State<MainPage> {
   }
 
   _buildShortDetailWidget() {
-    return Expanded(
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildBigTempWidget(),
-            _buildWeatherStatusWidget(),
-            _buildAiqWidget(),
-          ],
-        ),
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildBigTempWidget(),
+          _buildWeatherStatusWidget(),
+        ],
       ),
+      decoration: AppDecorations.blurRoundBox(),
     );
   }
 
@@ -87,13 +89,12 @@ class _MainPageState extends State<MainPage> {
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             alignment: Alignment.center,
             child: Text(
               Strings.defaultTemp,
-              style: Theme.of(context).textTheme.headline1,
+              style: Theme.of(context).textTheme.headline2,
             ),
           ),
           Container(
@@ -112,35 +113,34 @@ class _MainPageState extends State<MainPage> {
     return Container(
       child: Text(
         Strings.defaultWeatherStatus,
-        style: Theme.of(context).textTheme.headline5,
+        style: Theme.of(context).textTheme.headline4,
       ),
     );
   }
 
   Widget _buildAiqWidget() {
     return Container(
-      decoration: BoxDecoration(
-        color: Color.fromRGBO(255, 255, 255, 180),
-        borderRadius: BorderRadius.circular(20),
-      ),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: AppDecorations.blurRoundBox(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: Icon(
-              Icons.eco,
-              color: Colors.white,
-            ),
-          ),
+              padding: const EdgeInsets.only(right: 8.0),
+              child: AppIcons.aqiLeaf),
           Text(
             "AIQ " + Strings.defaultAqi,
             style: Theme.of(context).textTheme.headline6,
           ),
         ],
       ),
+    );
+  }
+
+  _buildAppBackground() {
+    return Container(
+      decoration: BoxDecoration(gradient: WeatherGradients.defaultGradient),
     );
   }
 }

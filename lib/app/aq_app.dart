@@ -14,12 +14,23 @@ class AqApp extends StatelessWidget {
         textTheme: TextTheme(
           headline1: TextStyle(
             color: Colors.white,
+            fontSize: 150,
           ),
           headline4: TextStyle(
             color: Colors.white,
           ),
-          headline5: TextStyle(color: Colors.white),
-          headline6: TextStyle(color: Colors.white),
+          headline2: TextStyle(
+            color: Colors.white,
+          ),
+          headline3: TextStyle(
+            color: Colors.white,
+          ),
+          headline5: TextStyle(
+            color: Colors.white,
+          ),
+          headline6: TextStyle(
+            color: Colors.white,
+          ),
         ),
       ),
       home: MainPage(appTitle: Strings.appName),
