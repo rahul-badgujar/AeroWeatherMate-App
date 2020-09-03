@@ -1,14 +1,12 @@
-import 'dart:convert';
-
 import 'package:air_quality_app/api/data/air_quality_data.dart';
-import 'package:air_quality_app/api/network/api_urls.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
+import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/resources/strings_rsc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
+import 'package:progress_indicators/progress_indicators.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, @required this.appTitle}) : super(key: key);
@@ -19,14 +17,20 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   Gradient currentAppGradient;
-  Position currentLocation;
-  AirQualityData airQualityData;
+  Position currentLiveLocation;
+  Future<AirQualityData> airQualityData;
   @override
   void initState() {
     super.initState();
     currentAppGradient = WeatherGradients.defaultGradient;
-    currentLocation = null;
-    airQualityData = null;
+    //currentLiveLocation = Position();
+    //airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
+    GeolocationService.getCurrentLiveLocation().then((location) {
+      setState(() {
+        currentLiveLocation = location;
+        airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
+      });
+    });
   }
 
   @override
@@ -48,7 +52,6 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           children: [
             _buildTopBar(),
-            _updateDataWidget(),
             _buildShortWeatherDetailWidget(),
           ],
         ),
@@ -66,15 +69,15 @@ class _MainPageState extends State<MainPage> {
               Icons.refresh,
               color: Colors.white,
             ),
-            onPressed: () => _refreshDataForCurrentLocation(),
+            onPressed: () => _refreshDataForcurrentLiveLocation(),
           ),
           Expanded(
             child: Center(
               child: GestureDetector(
                 onTap: () => _showAddressDialog(),
-                child: Text(
-                  Strings.defaultCity,
-                  style: Theme.of(context).textTheme.headline5,
+                child: FutureBuilder<AirQualityData>(
+                  future: airQualityData,
+                  builder: _cityTitleFutureBuilder,
                 ),
               ),
             ),
@@ -184,7 +187,7 @@ class _MainPageState extends State<MainPage> {
             ),
             children: [
               Text(
-                "City : ${airQualityData.city}, \n State: ${airQualityData.state}",
+                "City : ${Strings.defaultCity}, \n State: ${Strings.defaultState}",
                 maxLines: 5,
               ),
             ],
@@ -194,31 +197,26 @@ class _MainPageState extends State<MainPage> {
         });
   }
 
-  Widget _updateDataWidget() {
-    return SizedBox(
-      height: 16,
-      width: 16,
-      child: CircularProgressIndicator(
-        backgroundColor: Colors.white,
-        strokeWidth: 4,
-      ),
-    );
-  }
-
-  void _refreshDataForCurrentLocation() {
-    Future<Position> position = getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        forceAndroidLocationManager: true);
-    position.then((location) {
+  void _refreshDataForcurrentLiveLocation() {
+    GeolocationService.getCurrentLiveLocation().then((location) {
       setState(() {
-        currentLocation = location;
-        Future<AirQualityData> response =
-            HttpClient().fetchAirQualityData(currentLocation);
-        response.then((data) {
-          airQualityData = data;
-          print(airQualityData.toString());
-        });
+        currentLiveLocation = location;
+        airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
       });
     });
+  }
+
+  Widget _cityTitleFutureBuilder(context, snapshot) {
+    if (snapshot.hasData) {
+      return Text(
+        snapshot.data.city,
+        style: Theme.of(context).textTheme.headline5,
+      );
+    } else {
+      return JumpingDotsProgressIndicator(
+        color: Colors.white,
+        fontSize: 32,
+      );
+    }
   }
 }

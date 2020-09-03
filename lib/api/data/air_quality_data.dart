@@ -1,8 +1,13 @@
+import 'package:air_quality_app/resources/strings_rsc.dart';
+
 class AirQualityData {
   final String name;
   final String city;
   final String state;
-  AirQualityData({this.name, this.state, this.city});
+  AirQualityData(
+      {this.name = Strings.defaultPlace,
+      this.city = Strings.defaultCity,
+      this.state = Strings.defaultState});
 
   factory AirQualityData.fromJson(Map<String, dynamic> json) {
     return AirQualityData(

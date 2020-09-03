@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:air_quality_app/api/exceptions/api_exceptions.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'api_urls.dart';
@@ -15,11 +17,31 @@ class HttpClient {
   Future<AirQualityData> fetchAirQualityData(Position location) async {
     String apiRequestUrl = ApiUrls.nearestCityDataUrl(
         latitude: location.latitude, longitude: location.longitude);
-    final http.Response response = await http.get(apiRequestUrl);
-    if (response.statusCode == 200) {
-      return AirQualityData.fromJson(json.decode(response.body));
-    } else {
-      print("Error in Fetching Data : " + response.statusCode.toString());
+    try {
+      final http.Response response = await http.get(apiRequestUrl);
+      final int statusCode = response.statusCode;
+      if (statusCode == 200) {
+        if (response.body.isEmpty)
+          throw EmptyApiResultException();
+        else
+          return AirQualityData.fromJson(json.decode(response.body));
+      } else {
+        print("Error in Fetching Data : " + statusCode.toString());
+        final int errorType = statusCode % 100;
+        if (errorType == 3)
+          throw RedirectionalApiException();
+        else if (errorType == 4)
+          throw ClientSideErrorApiException();
+        else if (errorType == 5)
+          throw ServerSideApiException();
+        else
+          throw UnknownApiException();
+      }
+    } on Exception catch (exception) {
+      if (exception is SocketException)
+        throw ConnectionException();
+      else if (exception is ApiException) print(exception.toString());
+      return AirQualityData();
     }
   }
 }
