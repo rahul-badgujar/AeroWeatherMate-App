@@ -1,8 +1,14 @@
+import 'dart:convert';
+
+import 'package:air_quality_app/api/data/air_quality_data.dart';
+import 'package:air_quality_app/api/network/api_urls.dart';
+import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
-import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/resources/strings_rsc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, @required this.appTitle}) : super(key: key);
@@ -13,10 +19,14 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   Gradient currentAppGradient;
+  Position currentLocation;
+  AirQualityData airQualityData;
   @override
   void initState() {
     super.initState();
     currentAppGradient = WeatherGradients.defaultGradient;
+    currentLocation = null;
+    airQualityData = null;
   }
 
   @override
@@ -38,6 +48,7 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           children: [
             _buildTopBar(),
+            _updateDataWidget(),
             _buildShortWeatherDetailWidget(),
           ],
         ),
@@ -55,7 +66,7 @@ class _MainPageState extends State<MainPage> {
               Icons.refresh,
               color: Colors.white,
             ),
-            onPressed: null,
+            onPressed: () => _refreshDataForCurrentLocation(),
           ),
           Expanded(
             child: Center(
@@ -86,7 +97,8 @@ class _MainPageState extends State<MainPage> {
       margin: EdgeInsets.symmetric(vertical: 8),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
         children: [
           _buildTempWidget(),
           _buildWeatherStatusWidget(),
@@ -98,6 +110,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildTempWidget() {
     return Container(
+      padding: EdgeInsets.only(right: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +119,7 @@ class _MainPageState extends State<MainPage> {
             alignment: Alignment.center,
             child: Text(
               Strings.defaultTemp,
-              style: Theme.of(context).textTheme.headline3,
+              style: Theme.of(context).textTheme.headline4,
             ),
           ),
           Container(
@@ -123,14 +136,15 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildWeatherStatusWidget() {
     return Container(
+      padding: EdgeInsets.only(left: 8),
       child: Text(
         Strings.defaultWeatherStatus,
-        style: Theme.of(context).textTheme.headline4,
+        style: Theme.of(context).textTheme.headline5,
       ),
     );
   }
 
-  Widget _buildAiqWidget() {
+  /*  Widget _buildAiqWidget() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: AppDecorations.blurRoundBox(),
@@ -148,7 +162,7 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
-  }
+  } */
 
   Widget _buildAppBackground() {
     return Container(
@@ -170,7 +184,7 @@ class _MainPageState extends State<MainPage> {
             ),
             children: [
               Text(
-                "${Strings.defaultPlaceName}, ${Strings.defaultCity}, ${Strings.defaultState}\nPIN: ${Strings.defaultCountryCode} ${Strings.defaultPostalCode}",
+                "City : ${airQualityData.city}, \n State: ${airQualityData.state}",
                 maxLines: 5,
               ),
             ],
@@ -178,5 +192,33 @@ class _MainPageState extends State<MainPage> {
             titlePadding: EdgeInsets.all(12),
           );
         });
+  }
+
+  Widget _updateDataWidget() {
+    return SizedBox(
+      height: 16,
+      width: 16,
+      child: CircularProgressIndicator(
+        backgroundColor: Colors.white,
+        strokeWidth: 4,
+      ),
+    );
+  }
+
+  void _refreshDataForCurrentLocation() {
+    Future<Position> position = getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        forceAndroidLocationManager: true);
+    position.then((location) {
+      setState(() {
+        currentLocation = location;
+        Future<AirQualityData> response =
+            HttpClient().fetchAirQualityData(currentLocation);
+        response.then((data) {
+          airQualityData = data;
+          print(airQualityData.toString());
+        });
+      });
+    });
   }
 }
