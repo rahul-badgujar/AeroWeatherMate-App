@@ -1,13 +1,14 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:air_quality_app/api/data/air_quality_data.dart';
 import 'package:air_quality_app/api/network/api_urls.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
-import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/resources/strings_rsc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, @required this.appTitle}) : super(key: key);
@@ -18,10 +19,14 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   Gradient currentAppGradient;
+  Position currentLocation;
+  AirQualityData airQualityData;
   @override
   void initState() {
     super.initState();
     currentAppGradient = WeatherGradients.defaultGradient;
+    currentLocation = null;
+    airQualityData = null;
   }
 
   @override
@@ -61,9 +66,7 @@ class _MainPageState extends State<MainPage> {
               Icons.refresh,
               color: Colors.white,
             ),
-            onPressed: () {
-              HttpClient().fetchData(ApiUrls.nearestCityDataUrl());
-            },
+            onPressed: () => _refreshDataForCurrentLocation(),
           ),
           Expanded(
             child: Center(
@@ -141,7 +144,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildAiqWidget() {
+  /*  Widget _buildAiqWidget() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: AppDecorations.blurRoundBox(),
@@ -159,7 +162,7 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
-  }
+  } */
 
   Widget _buildAppBackground() {
     return Container(
@@ -181,7 +184,7 @@ class _MainPageState extends State<MainPage> {
             ),
             children: [
               Text(
-                "${Strings.defaultPlaceName}, ${Strings.defaultCity}, ${Strings.defaultState}\nPIN: ${Strings.defaultCountryCode} ${Strings.defaultPostalCode}",
+                "City : ${airQualityData.city}, \n State: ${airQualityData.state}",
                 maxLines: 5,
               ),
             ],
@@ -200,5 +203,22 @@ class _MainPageState extends State<MainPage> {
         strokeWidth: 4,
       ),
     );
+  }
+
+  void _refreshDataForCurrentLocation() {
+    Future<Position> position = getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        forceAndroidLocationManager: true);
+    position.then((location) {
+      setState(() {
+        currentLocation = location;
+        Future<AirQualityData> response =
+            HttpClient().fetchAirQualityData(currentLocation);
+        response.then((data) {
+          airQualityData = data;
+          print(airQualityData.toString());
+        });
+      });
+    });
   }
 }

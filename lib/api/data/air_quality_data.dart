@@ -14,7 +14,7 @@ class AirQualityData {
 
   @override
   String toString() {
-    return "${name}, ${city}, ${state}";
+    return "$name, $city, $state";
   }
 }
 

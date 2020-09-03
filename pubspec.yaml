@@ -31,6 +31,7 @@ dependencies:
   json_serializable: ^3.4.1
   build_runner: ^1.10.2
   http: ^0.12.2
+  geolocator: ^6.0.0
 
 dev_dependencies:
   flutter_test:
