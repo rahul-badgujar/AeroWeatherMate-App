@@ -1,3 +1,4 @@
+import 'package:air_quality_app/resources/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,79 @@ class WeatherGradients {
       Color.fromRGBO(153, 33, 232, 1),
     ],
   );
-  static const LinearGradient hot = LinearGradient(
+  static const LinearGradient clearSkyDay = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    stops: [0.1, 0.72],
+    colors: [
+      Color.fromRGBO(95, 114, 190, 1),
+      Color.fromRGBO(153, 33, 232, 1),
+    ],
+  );
+  static const LinearGradient clearSkyNight = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    stops: [0.1, 0.72],
+    colors: [
+      Color.fromRGBO(25, 23, 20, 1),
+      Color.fromRGBO(34, 52, 174, 1),
+    ],
+  );
+  static const LinearGradient fewCloudsDay = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    stops: [0.1, 0.72],
+    colors: [
+      Color.fromRGBO(8, 126, 225, 1),
+      Color.fromRGBO(5, 232, 186, 1),
+    ],
+  );
+  static const LinearGradient fewCloudsNight = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    stops: [0.1, 0.72],
+    colors: [
+      Color.fromRGBO(0, 159, 194, 1),
+      Color.fromRGBO(13, 10, 11, 1),
+    ],
+  );
+  static const LinearGradient rainDay = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    stops: [0.1, 0.72],
+    colors: [
+      Color.fromRGBO(11, 171, 100, 1),
+      Color.fromRGBO(59, 183, 143, 1),
+    ],
+  );
+  static const LinearGradient rainNight = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    stops: [0.1, 0.72],
+    colors: [
+      Color.fromRGBO(0, 0, 0, 1),
+      Color.fromRGBO(22, 109, 59, 1),
+    ],
+  );
+  static const LinearGradient scatteredClouds = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    stops: [0.1, 0.72],
+    colors: [
+      Color.fromRGBO(215, 129, 106, 1),
+      Color.fromRGBO(189, 79, 108, 1),
+    ],
+  );
+  static const LinearGradient brokenClouds = LinearGradient(
+    begin: Alignment.topRight,
+    end: Alignment.bottomLeft,
+    stops: [0.1, 0.72],
+    colors: [
+      Color.fromRGBO(246, 112, 98, 1),
+      Color.fromRGBO(252, 82, 150, 1),
+    ],
+  );
+  static const LinearGradient showerRain = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
     stops: [0.1, 0.72],
@@ -20,67 +93,27 @@ class WeatherGradients {
       Color.fromRGBO(191, 58, 48, 1),
     ],
   );
-  static const LinearGradient clear = LinearGradient(
-    begin: Alignment.topRight,
-    end: Alignment.bottomLeft,
-    stops: [0.1, 0.72],
-    colors: [
-      Color.fromRGBO(131, 234, 241, 1),
-      Color.fromRGBO(99, 164, 255, 1),
-    ],
-  );
-  static const LinearGradient storm = LinearGradient(
-    begin: Alignment.topRight,
-    end: Alignment.bottomLeft,
-    stops: [0.1, 0.72],
-    colors: [
-      Color.fromRGBO(158, 118, 143, 1),
-      Color.fromRGBO(159, 164, 196, 1),
-    ],
-  );
-  static const LinearGradient cloudy = LinearGradient(
-    begin: Alignment.topRight,
-    end: Alignment.bottomLeft,
-    stops: [0.1, 0.72],
-    colors: [
-      Color.fromRGBO(180, 144, 200, 1),
-      Color.fromRGBO(142, 207, 205, 1),
-    ],
-  );
-  static const LinearGradient fog = LinearGradient(
-    begin: Alignment.topRight,
-    end: Alignment.bottomLeft,
-    stops: [0.1, 0.72],
-    colors: [
-      Color.fromRGBO(247, 154, 211, 1),
-      Color.fromRGBO(200, 111, 201, 1),
-    ],
-  );
-  static const LinearGradient sleet = LinearGradient(
-    begin: Alignment.topRight,
-    end: Alignment.bottomLeft,
-    stops: [0.1, 0.72],
-    colors: [
-      Color.fromRGBO(139, 147, 154, 1),
-      Color.fromRGBO(91, 100, 103, 1),
-    ],
-  );
-  static const LinearGradient sandstorm = LinearGradient(
-    begin: Alignment.topRight,
-    end: Alignment.bottomLeft,
-    stops: [0.1, 0.72],
-    colors: [
-      Color.fromRGBO(198, 146, 13, 1),
-      Color.fromRGBO(208, 157, 31, 80),
-    ],
-  );
-  static const LinearGradient tornado = LinearGradient(
-    begin: Alignment.topRight,
-    end: Alignment.bottomLeft,
-    stops: [0.2, 0.72],
-    colors: [
-      Color.fromRGBO(67, 48, 46, 1),
-      Color.fromRGBO(173, 111, 105, 25),
-    ],
-  );
+
+  static LinearGradient gradientFromWeatherEnum(WeatherEnums enm) {
+    if (enm == WeatherEnums.ClearSkyDay)
+      return WeatherGradients.clearSkyDay;
+    else if (enm == WeatherEnums.ClearSkyNight)
+      return WeatherGradients.clearSkyNight;
+    else if (enm == WeatherEnums.FewCloudsDay)
+      return WeatherGradients.fewCloudsDay;
+    else if (enm == WeatherEnums.FewCloudsNight)
+      return WeatherGradients.fewCloudsNight;
+    else if (enm == WeatherEnums.ScatteredClouds)
+      return WeatherGradients.scatteredClouds;
+    else if (enm == WeatherEnums.BrokenClouds)
+      return WeatherGradients.brokenClouds;
+    else if (enm == WeatherEnums.ShowerRain)
+      return WeatherGradients.showerRain;
+    else if (enm == WeatherEnums.RainDay)
+      return WeatherGradients.rainDay;
+    else if (enm == WeatherEnums.RainNight)
+      return WeatherGradients.rainNight;
+    else
+      return WeatherGradients.clearSkyDay;
+  }
 }

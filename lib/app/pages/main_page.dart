@@ -19,6 +19,7 @@ class _MainPageState extends State<MainPage> {
   Gradient currentAppGradient;
   Position currentLiveLocation;
   Future<AirQualityData> airQualityData;
+  WeatherEnums weatherEnum;
   @override
   void initState() {
     super.initState();
@@ -30,6 +31,13 @@ class _MainPageState extends State<MainPage> {
         currentLiveLocation = location;
         print("Accessed Location : " + currentLiveLocation.toString());
         airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
+        airQualityData.then((data) {
+          setState(() {
+            weatherEnum = Strings.weatherEnumFromWeatherCode(data.weatherCode);
+            currentAppGradient =
+                WeatherGradients.gradientFromWeatherEnum(weatherEnum);
+          });
+        });
       });
     });
   }
@@ -235,6 +243,13 @@ class _MainPageState extends State<MainPage> {
         currentLiveLocation = location;
         print("Accessed Location : " + currentLiveLocation.toString());
         airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
+        airQualityData.then((data) {
+          setState(() {
+            weatherEnum = Strings.weatherEnumFromWeatherCode(data.weatherCode);
+            currentAppGradient =
+                WeatherGradients.gradientFromWeatherEnum(weatherEnum);
+          });
+        });
       });
     });
   }
