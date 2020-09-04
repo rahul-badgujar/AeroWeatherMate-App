@@ -32,6 +32,7 @@ dependencies:
   build_runner: ^1.10.2
   http: ^0.12.2
   geolocator: ^6.0.0
+  progress_indicators: ^0.1.5
 
 dev_dependencies:
   flutter_test:

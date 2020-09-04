@@ -1,14 +1,12 @@
-import 'dart:convert';
-
 import 'package:air_quality_app/api/data/air_quality_data.dart';
-import 'package:air_quality_app/api/network/api_urls.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
+import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
-import 'package:air_quality_app/resources/strings_rsc.dart';
+import 'package:air_quality_app/resources/constants.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
+import 'package:progress_indicators/progress_indicators.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key, @required this.appTitle}) : super(key: key);
@@ -19,14 +17,21 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   Gradient currentAppGradient;
-  Position currentLocation;
-  AirQualityData airQualityData;
+  Position currentLiveLocation;
+  Future<AirQualityData> airQualityData;
   @override
   void initState() {
     super.initState();
     currentAppGradient = WeatherGradients.defaultGradient;
-    currentLocation = null;
-    airQualityData = null;
+    //currentLiveLocation = Position();
+    //airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
+    GeolocationService.getCurrentLiveLocation().then((location) {
+      setState(() {
+        currentLiveLocation = location;
+        print("Accessed Location : " + currentLiveLocation.toString());
+        airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
+      });
+    });
   }
 
   @override
@@ -44,11 +49,10 @@ class _MainPageState extends State<MainPage> {
   Widget _buildInfoScene(String cityName) {
     return SafeArea(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Column(
           children: [
             _buildTopBar(),
-            _updateDataWidget(),
             _buildShortWeatherDetailWidget(),
           ],
         ),
@@ -66,16 +70,13 @@ class _MainPageState extends State<MainPage> {
               Icons.refresh,
               color: Colors.white,
             ),
-            onPressed: () => _refreshDataForCurrentLocation(),
+            onPressed: () => _refreshDataForcurrentLiveLocation(),
           ),
           Expanded(
             child: Center(
               child: GestureDetector(
                 onTap: () => _showAddressDialog(),
-                child: Text(
-                  Strings.defaultCity,
-                  style: Theme.of(context).textTheme.headline5,
-                ),
+                child: _buildTopBarCityTitle(),
               ),
             ),
           ),
@@ -117,9 +118,21 @@ class _MainPageState extends State<MainPage> {
         children: [
           Container(
             alignment: Alignment.center,
-            child: Text(
-              Strings.defaultTemp,
-              style: Theme.of(context).textTheme.headline4,
+            child: FutureBuilder<AirQualityData>(
+              future: airQualityData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    snapshot.data.temprature.toString(),
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+                } else {
+                  return JumpingDotsProgressIndicator(
+                    color: Colors.white,
+                    fontSize: 32,
+                  );
+                }
+              },
             ),
           ),
           Container(
@@ -137,9 +150,23 @@ class _MainPageState extends State<MainPage> {
   Widget _buildWeatherStatusWidget() {
     return Container(
       padding: EdgeInsets.only(left: 8),
-      child: Text(
-        Strings.defaultWeatherStatus,
-        style: Theme.of(context).textTheme.headline5,
+      child: FutureBuilder<AirQualityData>(
+        future: airQualityData,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Text(
+              Strings.weatherStatusFromWeatherEnum(
+                  Strings.weatherEnumFromWeatherCode(
+                      snapshot.data.weatherCode)),
+              style: Theme.of(context).textTheme.headline6,
+            );
+          } else {
+            return JumpingDotsProgressIndicator(
+              color: Colors.white,
+              fontSize: 32,
+            );
+          }
+        },
       ),
     );
   }
@@ -183,9 +210,17 @@ class _MainPageState extends State<MainPage> {
               textAlign: TextAlign.center,
             ),
             children: [
-              Text(
-                "City : ${airQualityData.city}, \n State: ${airQualityData.state}",
-                maxLines: 5,
+              FutureBuilder<AirQualityData>(
+                future: airQualityData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                        "${snapshot.data.city}, ${snapshot.data.state}, ${snapshot.data.country}",
+                        maxLines: 3);
+                  } else {
+                    return Text("Loading...");
+                  }
+                },
               ),
             ],
             contentPadding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -194,31 +229,32 @@ class _MainPageState extends State<MainPage> {
         });
   }
 
-  Widget _updateDataWidget() {
-    return SizedBox(
-      height: 16,
-      width: 16,
-      child: CircularProgressIndicator(
-        backgroundColor: Colors.white,
-        strokeWidth: 4,
-      ),
-    );
-  }
-
-  void _refreshDataForCurrentLocation() {
-    Future<Position> position = getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        forceAndroidLocationManager: true);
-    position.then((location) {
+  void _refreshDataForcurrentLiveLocation() {
+    GeolocationService.getCurrentLiveLocation().then((location) {
       setState(() {
-        currentLocation = location;
-        Future<AirQualityData> response =
-            HttpClient().fetchAirQualityData(currentLocation);
-        response.then((data) {
-          airQualityData = data;
-          print(airQualityData.toString());
-        });
+        currentLiveLocation = location;
+        print("Accessed Location : " + currentLiveLocation.toString());
+        airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
       });
     });
+  }
+
+  Widget _buildTopBarCityTitle() {
+    return FutureBuilder<AirQualityData>(
+      future: airQualityData,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            snapshot.data.city,
+            style: Theme.of(context).textTheme.headline5,
+          );
+        } else {
+          return JumpingDotsProgressIndicator(
+            color: Colors.white,
+            fontSize: 32,
+          );
+        }
+      },
+    );
   }
 }
