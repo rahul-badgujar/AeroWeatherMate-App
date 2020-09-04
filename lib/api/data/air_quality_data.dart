@@ -1,25 +1,54 @@
-import 'package:air_quality_app/resources/strings_rsc.dart';
+import 'package:air_quality_app/resources/constants.dart';
 
 class AirQualityData {
-  final String name;
-  final String city;
-  final String state;
-  AirQualityData(
-      {this.name = Strings.defaultPlace,
-      this.city = Strings.defaultCity,
-      this.state = Strings.defaultState});
+  final name;
+  final city;
+  final state;
+  final country;
+  final temprature;
+  final atmPressure;
+  final humidity;
+  final windSpeed;
+  final windDirection;
+  final String weatherCode;
+  final aqiUS;
+  final String mainUSPollutant;
+  AirQualityData({
+    this.name = Strings.defaultPlaceName,
+    this.city = Strings.defaultCity,
+    this.state = Strings.defaultState,
+    this.country = Strings.defaultCountry,
+    this.temprature,
+    this.atmPressure,
+    this.humidity,
+    this.windSpeed,
+    this.windDirection,
+    this.weatherCode,
+    this.aqiUS,
+    this.mainUSPollutant,
+  });
 
   factory AirQualityData.fromJson(Map<String, dynamic> json) {
+    assert(json != null);
     return AirQualityData(
       name: json["data"]["name"],
       city: json["data"]["city"],
       state: json["data"]["state"],
+      country: json["data"]["country"],
+      temprature: json["data"]["current"]["weather"]["tp"],
+      atmPressure: json["data"]["current"]["weather"]["pr"],
+      humidity: json["data"]["current"]["weather"]["hu"],
+      windSpeed: json["data"]["current"]["weather"]["ws"],
+      windDirection: json["data"]["current"]["weather"]["wd"],
+      weatherCode: json["data"]["current"]["weather"]["ic"],
+      aqiUS: json["data"]["current"]["pollution"]["aqius"],
+      mainUSPollutant: json["data"]["current"]["pollution"]["mainus"],
     );
   }
 
   @override
   String toString() {
-    return "$name, $city, $state";
+    return "$name, $city, $state, $country";
   }
 }
 

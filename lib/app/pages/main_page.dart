@@ -4,7 +4,7 @@ import 'package:air_quality_app/resources/gradients_rsc.dart';
 import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
-import 'package:air_quality_app/resources/strings_rsc.dart';
+import 'package:air_quality_app/resources/constants.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
@@ -28,6 +28,7 @@ class _MainPageState extends State<MainPage> {
     GeolocationService.getCurrentLiveLocation().then((location) {
       setState(() {
         currentLiveLocation = location;
+        print("Accessed Location : " + currentLiveLocation.toString());
         airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
       });
     });
@@ -48,7 +49,7 @@ class _MainPageState extends State<MainPage> {
   Widget _buildInfoScene(String cityName) {
     return SafeArea(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Column(
           children: [
             _buildTopBar(),
@@ -75,10 +76,7 @@ class _MainPageState extends State<MainPage> {
             child: Center(
               child: GestureDetector(
                 onTap: () => _showAddressDialog(),
-                child: FutureBuilder<AirQualityData>(
-                  future: airQualityData,
-                  builder: _cityTitleFutureBuilder,
-                ),
+                child: _buildTopBarCityTitle(),
               ),
             ),
           ),
@@ -120,9 +118,21 @@ class _MainPageState extends State<MainPage> {
         children: [
           Container(
             alignment: Alignment.center,
-            child: Text(
-              Strings.defaultTemp,
-              style: Theme.of(context).textTheme.headline4,
+            child: FutureBuilder<AirQualityData>(
+              future: airQualityData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    snapshot.data.temprature.toString(),
+                    style: Theme.of(context).textTheme.headline4,
+                  );
+                } else {
+                  return JumpingDotsProgressIndicator(
+                    color: Colors.white,
+                    fontSize: 32,
+                  );
+                }
+              },
             ),
           ),
           Container(
@@ -140,9 +150,23 @@ class _MainPageState extends State<MainPage> {
   Widget _buildWeatherStatusWidget() {
     return Container(
       padding: EdgeInsets.only(left: 8),
-      child: Text(
-        Strings.defaultWeatherStatus,
-        style: Theme.of(context).textTheme.headline5,
+      child: FutureBuilder<AirQualityData>(
+        future: airQualityData,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Text(
+              Strings.weatherStatusFromWeatherEnum(
+                  Strings.weatherEnumFromWeatherCode(
+                      snapshot.data.weatherCode)),
+              style: Theme.of(context).textTheme.headline6,
+            );
+          } else {
+            return JumpingDotsProgressIndicator(
+              color: Colors.white,
+              fontSize: 32,
+            );
+          }
+        },
       ),
     );
   }
@@ -186,9 +210,17 @@ class _MainPageState extends State<MainPage> {
               textAlign: TextAlign.center,
             ),
             children: [
-              Text(
-                "City : ${Strings.defaultCity}, \n State: ${Strings.defaultState}",
-                maxLines: 5,
+              FutureBuilder<AirQualityData>(
+                future: airQualityData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                        "${snapshot.data.city}, ${snapshot.data.state}, ${snapshot.data.country}",
+                        maxLines: 3);
+                  } else {
+                    return Text("Loading...");
+                  }
+                },
               ),
             ],
             contentPadding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
@@ -201,22 +233,28 @@ class _MainPageState extends State<MainPage> {
     GeolocationService.getCurrentLiveLocation().then((location) {
       setState(() {
         currentLiveLocation = location;
+        print("Accessed Location : " + currentLiveLocation.toString());
         airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
       });
     });
   }
 
-  Widget _cityTitleFutureBuilder(context, snapshot) {
-    if (snapshot.hasData) {
-      return Text(
-        snapshot.data.city,
-        style: Theme.of(context).textTheme.headline5,
-      );
-    } else {
-      return JumpingDotsProgressIndicator(
-        color: Colors.white,
-        fontSize: 32,
-      );
-    }
+  Widget _buildTopBarCityTitle() {
+    return FutureBuilder<AirQualityData>(
+      future: airQualityData,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            snapshot.data.city,
+            style: Theme.of(context).textTheme.headline5,
+          );
+        } else {
+          return JumpingDotsProgressIndicator(
+            color: Colors.white,
+            fontSize: 32,
+          );
+        }
+      },
+    );
   }
 }

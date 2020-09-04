@@ -23,8 +23,12 @@ class HttpClient {
       if (statusCode == 200) {
         if (response.body.isEmpty)
           throw EmptyApiResultException();
-        else
-          return AirQualityData.fromJson(json.decode(response.body));
+        else {
+          AirQualityData data =
+              AirQualityData.fromJson(json.decode(response.body));
+          print("Successful API Call : " + data.toString());
+          return data;
+        }
       } else {
         print("Error in Fetching Data : " + statusCode.toString());
         final int errorType = statusCode % 100;
@@ -39,7 +43,7 @@ class HttpClient {
       }
     } on Exception catch (exception) {
       if (exception is SocketException)
-        throw ConnectionException();
+        print(ConnectionException().toString());
       else if (exception is ApiException) print(exception.toString());
       return AirQualityData();
     }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/app/pages/main_page.dart';
-import 'package:air_quality_app/resources/strings_rsc.dart';
+import 'package:air_quality_app/resources/constants.dart';
 
 class AqApp extends StatelessWidget {
   @override
