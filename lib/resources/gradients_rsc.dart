@@ -62,7 +62,7 @@ class WeatherGradients {
     end: Alignment.bottomLeft,
     stops: [0.1, 0.72],
     colors: [
-      Color.fromRGBO(0, 0, 0, 1),
+      Color.fromRGBO(0, 0, 0, 30),
       Color.fromRGBO(22, 109, 59, 1),
     ],
   );

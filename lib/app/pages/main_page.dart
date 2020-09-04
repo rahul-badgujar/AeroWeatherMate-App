@@ -1,6 +1,7 @@
 import 'package:air_quality_app/api/data/air_quality_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
+import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +21,11 @@ class _MainPageState extends State<MainPage> {
   Position currentLiveLocation;
   Future<AirQualityData> airQualityData;
   WeatherEnums weatherEnum;
+  Icon weatherStatusIcon;
   @override
   void initState() {
     super.initState();
-    currentAppGradient = WeatherGradients.defaultGradient;
+    //currentAppGradient = WeatherGradients.defaultGradient;
     //currentLiveLocation = Position();
     //airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
     GeolocationService.getCurrentLiveLocation().then((location) {
@@ -36,6 +38,7 @@ class _MainPageState extends State<MainPage> {
             weatherEnum = Strings.weatherEnumFromWeatherCode(data.weatherCode);
             currentAppGradient =
                 WeatherGradients.gradientFromWeatherEnum(weatherEnum);
+            weatherStatusIcon = AppIcons.iconFromWeatherEnum(weatherEnum);
           });
         });
       });
@@ -106,11 +109,12 @@ class _MainPageState extends State<MainPage> {
       margin: EdgeInsets.symmetric(vertical: 8),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildTempWidget(),
           _buildWeatherStatusWidget(),
+          _buildWeatherStatusIcon(),
         ],
       ),
       decoration: AppDecorations.blurRoundBox(),
@@ -145,6 +149,7 @@ class _MainPageState extends State<MainPage> {
           ),
           Container(
             alignment: Alignment.topLeft,
+            padding: EdgeInsets.symmetric(horizontal: 4),
             child: Text(
               "°" + Strings.defaultTempScale,
               style: Theme.of(context).textTheme.headline6,
@@ -180,24 +185,24 @@ class _MainPageState extends State<MainPage> {
   }
 
   /*  Widget _buildAiqWidget() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: AppDecorations.blurRoundBox(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: AppIcons.aqiLeaf),
-          Text(
-            "AIQ " + Strings.defaultAqi,
-            style: Theme.of(context).textTheme.headline6,
-          ),
-        ],
-      ),
-    );
-  } */
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: AppDecorations.blurRoundBox(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: AppIcons.aqiLeaf),
+                    Text(
+                      "AIQ " + Strings.defaultAqi,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                  ],
+                ),
+              );
+            } */
 
   Widget _buildAppBackground() {
     return Container(
@@ -248,6 +253,7 @@ class _MainPageState extends State<MainPage> {
             weatherEnum = Strings.weatherEnumFromWeatherCode(data.weatherCode);
             currentAppGradient =
                 WeatherGradients.gradientFromWeatherEnum(weatherEnum);
+            weatherStatusIcon = AppIcons.iconFromWeatherEnum(weatherEnum);
           });
         });
       });
@@ -270,6 +276,13 @@ class _MainPageState extends State<MainPage> {
           );
         }
       },
+    );
+  }
+
+  Widget _buildWeatherStatusIcon() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      child: weatherStatusIcon,
     );
   }
 }
