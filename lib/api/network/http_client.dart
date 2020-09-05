@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:air_quality_app/api/exceptions/api_exceptions.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 import 'api_urls.dart';
 import 'package:air_quality_app/api/data/air_quality_data.dart';
@@ -14,7 +14,7 @@ class HttpClient {
     return _instance;
   }
 
-  Future<AirQualityData> fetchAirQualityData(Position location) async {
+  Future<AirQualityData> fetchAirQualityData(LocationData location) async {
     String apiRequestUrl = ApiUrls.nearestCityDataUrl(
         latitude: location.latitude, longitude: location.longitude);
     try {

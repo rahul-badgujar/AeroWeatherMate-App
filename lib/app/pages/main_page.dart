@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:air_quality_app/api/data/air_quality_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
@@ -6,7 +8,7 @@ import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/resources/constants.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
 class MainPage extends StatefulWidget {
@@ -18,7 +20,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   Gradient currentAppGradient;
-  Position currentLiveLocation;
+  LocationData currentLiveLocation;
   Future<AirQualityData> airQualityData;
   WeatherEnums weatherEnum;
   Icon weatherStatusIcon;
@@ -28,21 +30,12 @@ class _MainPageState extends State<MainPage> {
     //currentAppGradient = WeatherGradients.defaultGradient;
     //currentLiveLocation = Position();
     //airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
-    GeolocationService.getCurrentLiveLocation().then((location) {
-      setState(() {
-        currentLiveLocation = location;
-        print("Accessed Location : " + currentLiveLocation.toString());
-        airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
-        airQualityData.then((data) {
-          setState(() {
-            weatherEnum = Strings.weatherEnumFromWeatherCode(data.weatherCode);
-            currentAppGradient =
-                WeatherGradients.gradientFromWeatherEnum(weatherEnum);
-            weatherStatusIcon = AppIcons.iconFromWeatherEnum(weatherEnum);
-          });
-        });
-      });
-    });
+    _refreshPage();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -81,7 +74,7 @@ class _MainPageState extends State<MainPage> {
               Icons.refresh,
               color: Colors.white,
             ),
-            onPressed: () => _refreshDataForcurrentLiveLocation(),
+            onPressed: () => _refreshPage(),
           ),
           Expanded(
             child: Center(
@@ -108,13 +101,17 @@ class _MainPageState extends State<MainPage> {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
         children: [
-          _buildTempWidget(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTempWidget(),
+              _buildWeatherStatusIcon(),
+            ],
+          ),
           _buildWeatherStatusWidget(),
-          _buildWeatherStatusIcon(),
         ],
       ),
       decoration: AppDecorations.blurRoundBox(),
@@ -162,7 +159,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildWeatherStatusWidget() {
     return Container(
-      padding: EdgeInsets.only(left: 8),
+      padding: EdgeInsets.symmetric(horizontal: 8),
       child: FutureBuilder<AirQualityData>(
         future: airQualityData,
         builder: (context, snapshot) {
@@ -172,6 +169,7 @@ class _MainPageState extends State<MainPage> {
                   Strings.weatherEnumFromWeatherCode(
                       snapshot.data.weatherCode)),
               style: Theme.of(context).textTheme.headline6,
+              maxLines: 2,
             );
           } else {
             return JumpingDotsProgressIndicator(
@@ -242,20 +240,23 @@ class _MainPageState extends State<MainPage> {
         });
   }
 
-  void _refreshDataForcurrentLiveLocation() {
-    GeolocationService.getCurrentLiveLocation().then((location) {
+  void _refreshPage() {
+    GeolocationService.getCurrentLocation().then((location) {
       setState(() {
         currentLiveLocation = location;
-        print("Accessed Location : " + currentLiveLocation.toString());
-        airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
-        airQualityData.then((data) {
-          setState(() {
-            weatherEnum = Strings.weatherEnumFromWeatherCode(data.weatherCode);
-            currentAppGradient =
-                WeatherGradients.gradientFromWeatherEnum(weatherEnum);
-            weatherStatusIcon = AppIcons.iconFromWeatherEnum(weatherEnum);
-          });
-        });
+        _refreshAirQualityData();
+      });
+    });
+  }
+
+  void _refreshAirQualityData() {
+    airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
+    airQualityData.then((data) {
+      setState(() {
+        weatherEnum = Strings.weatherEnumFromWeatherCode(data.weatherCode);
+        currentAppGradient =
+            WeatherGradients.gradientFromWeatherEnum(weatherEnum);
+        weatherStatusIcon = AppIcons.iconFromWeatherEnum(weatherEnum);
       });
     });
   }
@@ -281,7 +282,6 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildWeatherStatusIcon() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16),
       child: weatherStatusIcon,
     );
   }

@@ -56,19 +56,20 @@ class Strings {
     else if (enm == WeatherEnums.ShowerRain)
       return "Shower Rain";
     else if (enm == WeatherEnums.RainDay || enm == WeatherEnums.RainNight)
-      return "Rain";
+      return "Raining Here";
     else
       return "Clear Sky";
   }
 }
 
 class Numbers {
-  static const double defaultTemprature = 35;
-  static const double defaultAtmPressure = 994;
+  static const int defaultTemprature = 35;
+  static const int defaultAtmPressure = 994;
   static const double defaultHumidity = 87;
   static const double defaultWindSpeed = 2;
-  static const double defaultWindDirection = 239;
-  static const double defaultAqiUS = 7;
+  static const int defaultWindDirection = 239;
+  static const int defaultAqiUS = 7;
   static const double defaultPollutantConcentration = 20;
-  static const double defaultPollutionAqi = 18;
+  static const int defaultPollutionAqi = 18;
+  static const double defaultWeatherIconSize = 30;
 }
