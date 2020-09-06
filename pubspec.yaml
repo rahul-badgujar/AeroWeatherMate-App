@@ -33,6 +33,7 @@ dependencies:
   http: ^0.12.2
   geolocator: ^6.0.0
   progress_indicators: ^0.1.5
+  location: ^3.0.0
 
 dev_dependencies:
   flutter_test:
