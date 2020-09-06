@@ -27,9 +27,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    //currentAppGradient = WeatherGradients.defaultGradient;
-    //currentLiveLocation = Position();
-    //airQualityData = HttpClient().fetchAirQualityData(currentLiveLocation);
     _refreshPage();
   }
 
@@ -52,7 +49,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildInfoScene(String cityName) {
     return SafeArea(
-      child: Container(
+      child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Column(
           children: [
