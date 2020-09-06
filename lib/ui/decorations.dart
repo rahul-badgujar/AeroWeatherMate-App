@@ -10,10 +10,10 @@ class AppDecorations {
   }
 
   static Decoration gradientBox(
-      {Gradient gradientTOFill = WeatherGradients.defaultGradient}) {
+      {Gradient gradientTOFill = AppGradients.defaultGradient}) {
     return BoxDecoration(
       gradient: gradientTOFill == null
-          ? WeatherGradients.defaultGradient
+          ? AppGradients.defaultGradient
           : gradientTOFill,
     );
   }

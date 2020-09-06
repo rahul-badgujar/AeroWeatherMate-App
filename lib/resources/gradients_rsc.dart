@@ -1,18 +1,18 @@
-import 'package:air_quality_app/resources/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class WeatherGradients {
+class AppGradients {
   static const LinearGradient defaultGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
-    stops: [0.1, 0.72],
+    //stops: [0.1, 0.72],
     colors: [
-      Color.fromRGBO(95, 114, 190, 1),
-      Color.fromRGBO(153, 33, 232, 1),
+      Color.fromRGBO(246, 112, 98, 1),
+      Color.fromRGBO(252, 82, 150, 1),
     ],
   );
-  static const LinearGradient clearSkyDay = LinearGradient(
+
+  /* static const LinearGradient clearSkyDay = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
     stops: [0.1, 0.72],
@@ -115,5 +115,5 @@ class WeatherGradients {
       return WeatherGradients.rainNight;
     else
       return WeatherGradients.clearSkyDay;
-  }
+  } */
 }
