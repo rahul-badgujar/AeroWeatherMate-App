@@ -10,6 +10,21 @@ enum WeatherEnums {
   RainNight
 }
 
+String airQualityFromAqi(int aqi) {
+  if (0 <= aqi && aqi <= 50)
+    return "Good Air";
+  else if (51 <= aqi && aqi <= 100)
+    return "Moderate Air";
+  else if (101 <= aqi && aqi <= 150)
+    return "Bad Air";
+  else if (151 <= aqi && aqi <= 200)
+    return "Unhealthy Air";
+  else if (201 <= aqi && aqi <= 300)
+    return "Very Unhealthy Air";
+  else
+    return "Hazardous Air";
+}
+
 class Strings {
   static const String appName = "Air Quality App";
   static const String defaultTempScale = "C";
