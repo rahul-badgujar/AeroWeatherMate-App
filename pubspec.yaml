@@ -35,6 +35,7 @@ dependencies:
   progress_indicators: ^0.1.5
   location: ^3.0.0
   gradient_widgets: ^0.5.1
+  flutter_svg: ^0.18.1
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +57,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/icons/
+    - assets/svg/
 
   fonts:
     - family: Weather

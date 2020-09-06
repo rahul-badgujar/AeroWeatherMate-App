@@ -1,123 +1,38 @@
 import 'package:air_quality_app/resources/constants.dart';
-import 'package:air_quality_app/resources/weather_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AppIcons {
-  static Icon aqiLeafIcon({Color color = Colors.white, double size = 10.0}) {
-    return Icon(
-      Icons.eco,
-      color: color,
-      size: size,
-    );
-  }
+String weatherIconPathFromWeatherCode(String code) {
+  print(code);
+  if (code == "01d")
+    return "assets/svg/clear_day.svg";
+  else if (code == "01n")
+    return "assets/svg/clear_night.svg";
+  else if (code == "02d" || code == "02n")
+    return "assets/svg/few_clouds.svg";
+  else if (code == "03d" || code == "03n")
+    return "assets/svg/scattered_clouds.svg";
+  else if (code == "04d" || code == "04n")
+    return "assets/svg/broken_clouds.svg";
+  else if (code == "09d" || code == "09n")
+    return "assets/svg/shower.svg";
+  else if (code == "10d" || code == "10n")
+    return "assets/svg/rain.svg";
+  else
+    return "assets/svg/rain.svg";
+}
 
-  static Icon downKeyIcon({Color color = Colors.white, double size = 10.0}) {
-    return Icon(
-      Icons.keyboard_arrow_down,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon clearSkyDayIcon(
-      {Color color = Colors.white,
-      double size = Numbers.defaultWeatherIconSize}) {
-    return Icon(
-      Weather.sun_inv,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon clearSkyNightIcon(
-      {Color color = Colors.white,
-      double size = Numbers.defaultWeatherIconSize}) {
-    return Icon(
-      Weather.moon_inv,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon fewCloudsDayIcon(
-      {Color color = Colors.white,
-      double size = Numbers.defaultWeatherIconSize}) {
-    return Icon(
-      Weather.cloud_sun_inv,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon fewCloudsNightIcon(
-      {Color color = Colors.white,
-      double size = Numbers.defaultWeatherIconSize}) {
-    return Icon(
-      Weather.cloud_moon_inv,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon scatteredCloudsIcon(
-      {Color color = Colors.white,
-      double size = Numbers.defaultWeatherIconSize}) {
-    return Icon(
-      Weather.clouds_flash_inv,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon brokenCloudsIcon(
-      {Color color = Colors.white,
-      double size = Numbers.defaultWeatherIconSize}) {
-    return Icon(
-      Weather.cloud_inv,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon showerRainIcon(
-      {Color color = Colors.white,
-      double size = Numbers.defaultWeatherIconSize}) {
-    return Icon(
-      Weather.rain_inv,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon rainIcon(
-      {Color color = Colors.white,
-      double size = Numbers.defaultWeatherIconSize}) {
-    return Icon(
-      Weather.hail_inv,
-      color: color,
-      size: size,
-    );
-  }
-
-  static Icon iconFromWeatherEnum(WeatherEnums enm) {
-    if (enm == WeatherEnums.ClearSkyDay)
-      return AppIcons.clearSkyDayIcon();
-    else if (enm == WeatherEnums.ClearSkyNight)
-      return AppIcons.clearSkyNightIcon();
-    else if (enm == WeatherEnums.FewCloudsDay)
-      return AppIcons.fewCloudsDayIcon();
-    else if (enm == WeatherEnums.FewCloudsNight)
-      return AppIcons.fewCloudsNightIcon();
-    else if (enm == WeatherEnums.ScatteredClouds)
-      return AppIcons.scatteredCloudsIcon();
-    else if (enm == WeatherEnums.BrokenClouds)
-      return AppIcons.brokenCloudsIcon();
-    else if (enm == WeatherEnums.ShowerRain)
-      return AppIcons.showerRainIcon();
-    else if (enm == WeatherEnums.RainDay || enm == WeatherEnums.RainNight)
-      return AppIcons.rainIcon();
-    else
-      return AppIcons.clearSkyDayIcon();
-  }
+String pollutionIconPathFromAqi(int aqi) {
+  if (0 <= aqi && aqi <= 50)
+    return "assets/svg/aqi_0_50.svg";
+  else if (51 <= aqi && aqi <= 100)
+    return "assets/svg/aqi_51_100.svg";
+  else if (101 <= aqi && aqi <= 150)
+    return "assets/svg/aqi_101_150.svg";
+  else if (151 <= aqi && aqi <= 200)
+    return "assets/svg/aqi_151_200.svg";
+  else if (201 <= aqi && aqi <= 300)
+    return "assets/svg/aqi_201_300.svg";
+  else
+    return "assets/svg/aqi_300_plus.svg";
 }

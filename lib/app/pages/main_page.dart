@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
+import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
@@ -49,6 +51,7 @@ class _MainPageState extends State<MainPage> {
               child: Column(
                 children: [
                   _buildCustomAppBar(),
+                  _buildCurrentDataWidget(),
                 ],
               ),
             ),
@@ -136,5 +139,56 @@ class _MainPageState extends State<MainPage> {
         airVisualData = HttpClient().fetchAirVisualData(currentLiveLocation);
       });
     });
+  }
+
+  Widget _buildCurrentDataWidget() {
+    return FutureBuilder<AirVisualData>(
+        future: airVisualData,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(
+                          weatherIconPathFromWeatherCode(snapshot
+                              .data.data.current.weather.weatherStatusCode),
+                          color: Colors.white,
+                          width: 48,
+                          height: 48,
+                        ),
+                      ],
+                    ),
+                  ),
+                  decoration: AppDecorations.blurRoundBox(),
+                ),
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(
+                          pollutionIconPathFromAqi(
+                              snapshot.data.data.current.pollution.aqiUS),
+                          color: Colors.white,
+                          width: 48,
+                          height: 48,
+                        ),
+                      ],
+                    ),
+                  ),
+                  decoration: AppDecorations.blurRoundBox(),
+                ),
+              ],
+            );
+          } else {
+            return JumpingDotsProgressIndicator();
+          }
+        });
   }
 }
