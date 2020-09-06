@@ -4,7 +4,7 @@ import 'package:air_quality_app/api/exceptions/api_exceptions.dart';
 import 'package:location/location.dart';
 
 import 'api_urls.dart';
-import 'package:air_quality_app/api/data/air_quality_data.dart';
+import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:http/http.dart' as http;
 
 class HttpClient {
@@ -14,7 +14,7 @@ class HttpClient {
     return _instance;
   }
 
-  Future<AirQualityData> fetchAirQualityData(LocationData location) async {
+  Future<AirVisualData> fetchAirVisualData(LocationData location) async {
     String apiRequestUrl = ApiUrls.nearestCityDataUrl(
         latitude: location.latitude, longitude: location.longitude);
     try {
@@ -24,8 +24,8 @@ class HttpClient {
         if (response.body.isEmpty)
           throw EmptyApiResultException();
         else {
-          AirQualityData data =
-              AirQualityData.fromJson(json.decode(response.body));
+          AirVisualData data =
+              AirVisualData.fromJson(json.decode(response.body));
           print("Successful API Call : " + data.toString());
           return data;
         }
@@ -45,7 +45,7 @@ class HttpClient {
       if (exception is SocketException)
         print(ConnectionException().toString());
       else if (exception is ApiException) print(exception.toString());
-      return AirQualityData();
+      return null;
     }
   }
 }
