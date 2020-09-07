@@ -13,7 +13,14 @@ class Pollution {
   @JsonKey(name: 'mainus')
   final mainPollutantUS;
 
-  Pollution(this.timeStamp, this.aqiUS, this.mainPollutantUS);
+  @JsonKey(name: 'aqicn')
+  final aqiCN;
+
+  @JsonKey(name: 'maincn')
+  final mainPollutantCN;
+
+  Pollution(this.timeStamp, this.aqiUS, this.mainPollutantUS, this.aqiCN,
+      this.mainPollutantCN);
 
   factory Pollution.fromJson(Map<String, dynamic> json) =>
       _$PollutionFromJson(json);

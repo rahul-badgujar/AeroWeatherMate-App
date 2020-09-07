@@ -11,6 +11,8 @@ Pollution _$PollutionFromJson(Map<String, dynamic> json) {
     json['ts'],
     json['aqius'],
     json['mainus'],
+    json['aqicn'],
+    json['maincn'],
   );
 }
 

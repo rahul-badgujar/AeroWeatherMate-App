@@ -25,6 +25,45 @@ String airQualityFromAqi(int aqi) {
     return "Hazardous Air";
 }
 
+String windDirectionFromAngle(int angle) {
+  if (315 < angle || angle < 45)
+    return "NORTH";
+  else if (135 < angle || angle < 225)
+    return "SOUTH";
+  else if (45 <= angle || angle <= 135)
+    return "EAST";
+  else if (225 <= angle || angle <= 315)
+    return "WEST";
+  else
+    return "NORTH";
+}
+
+String pollutantFromCode(String code) {
+  if (code == "p1")
+    return "pm2.5";
+  else if (code == "p2")
+    return "pm10";
+  else if (code == "n2")
+    return "NO2";
+  else if (code == "o3")
+    return "O3";
+  else if (code == "s2")
+    return "SO2";
+  else if (code == "co")
+    return "CO";
+  else
+    return "SO2";
+}
+
+String updateStatusFromTimeStamp(String timeStamp) {
+  final String year = timeStamp.substring(0, 4);
+  final String month = timeStamp.substring(5, 7);
+  final String day = timeStamp.substring(8, 10);
+  final String hours = timeStamp.substring(11, 13);
+  final String minutes = timeStamp.substring(14, 16);
+  return "$hours:$minutes , $day-$month-$year";
+}
+
 class Strings {
   static const String appName = "Air Quality App";
   static const String defaultTempScale = "C";

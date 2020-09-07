@@ -48,17 +48,40 @@ class _MainPageState extends State<MainPage> {
           ),
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildCustomAppBar(),
-                  _buildCurrentDataWidget(),
+                  Column(
+                    children: [
+                      _buildCustomAppBar(),
+                      _buildCurrentDataWidget(),
+                    ],
+                  ),
+                  _buildSourceCreditWidget(),
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSourceCreditWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      children: [
+        Text(
+          "source ",
+          style: TextStyle(color: Colors.white, fontSize: 12),
+        ),
+        Text(
+          "AirVisual",
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+      ],
     );
   }
 
@@ -92,8 +115,12 @@ class _MainPageState extends State<MainPage> {
                                 fontWeight: FontWeight.bold),
                           );
                         } else {
-                          return JumpingDotsProgressIndicator(
-                            color: Colors.white,
+                          return Text(
+                            "Loading...",
+                            style: TextStyle(
+                                fontSize: 24,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           );
                         }
                       },
@@ -159,51 +186,8 @@ class _MainPageState extends State<MainPage> {
                     _buildShortPollutionStatusWidget(snapshot),
                   ],
                 ),
-                Container(
-                  padding: EdgeInsets.all(12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${snapshot.data.data.current.weather.temprature}",
-                            style: TextStyle(color: Colors.white, fontSize: 56),
-                          ),
-                          Text(
-                            "°C",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  decoration: AppDecorations.blurRoundBox(),
-                ),
-                Container(
-                  padding: EdgeInsets.all(12),
-                  margin: EdgeInsets.only(top: 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${snapshot.data.data.current.pollution.aqiUS}",
-                            style: TextStyle(color: Colors.white, fontSize: 56),
-                          ),
-                          Text(
-                            "aqi",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  decoration: AppDecorations.blurRoundBox(),
-                ),
+                _buildFullWeatherStatusWidget(snapshot),
+                _buildFullPollutionStatusWidget(snapshot),
               ],
             );
           } else {
@@ -212,6 +196,136 @@ class _MainPageState extends State<MainPage> {
             );
           }
         });
+  }
+
+  Container _buildFullPollutionStatusWidget(
+      AsyncSnapshot<AirVisualData> snapshot) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      margin: EdgeInsets.only(top: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${snapshot.data.data.current.pollution.aqiUS}",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 56,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "aqi",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "US AQI:\n" +
+                      "US Pollutant:\n" +
+                      "CN AQI:\n" +
+                      "CN Pollutant:",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                Text(
+                  "${snapshot.data.data.current.pollution.aqiUS}\n" +
+                      "${pollutantFromCode(snapshot.data.data.current.pollution.mainPollutantUS)}\n" +
+                      "${snapshot.data.data.current.pollution.aqiCN}\n" +
+                      "${pollutantFromCode(snapshot.data.data.current.pollution.mainPollutantCN)}",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ],
+            ),
+          ),
+          _buildTimeStampWidget(snapshot.data.data.current.pollution.timeStamp),
+        ],
+      ),
+      decoration: AppDecorations.blurRoundBox(),
+    );
+  }
+
+  Container _buildFullWeatherStatusWidget(
+      AsyncSnapshot<AirVisualData> snapshot) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "${snapshot.data.data.current.weather.temprature}",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 56,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "°C",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Atm Pressure:\n" +
+                      "Humidity:\n" +
+                      "Wind Speed:\n" +
+                      "Wind Direction:",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                Text(
+                  "${snapshot.data.data.current.weather.pressure} hPa\n" +
+                      "${snapshot.data.data.current.weather.humidity} %\n" +
+                      "${snapshot.data.data.current.weather.windSpeed} m/s\n" +
+                      "${windDirectionFromAngle(snapshot.data.data.current.weather.windDirection)}",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ],
+            ),
+          ),
+          _buildTimeStampWidget(snapshot.data.data.current.weather.timeStamp),
+        ],
+      ),
+      decoration: AppDecorations.blurRoundBox(),
+    );
   }
 
   Expanded _buildShortPollutionStatusWidget(
@@ -225,7 +339,10 @@ class _MainPageState extends State<MainPage> {
             children: [
               Text(
                 "${airQualityFromAqi(snapshot.data.data.current.pollution.aqiUS)}",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -233,8 +350,8 @@ class _MainPageState extends State<MainPage> {
                   pollutionIconPathFromAqi(
                       snapshot.data.data.current.pollution.aqiUS),
                   color: Colors.white,
-                  width: 45,
-                  height: 45,
+                  width: 56,
+                  height: 56,
                 ),
               ),
             ],
@@ -256,7 +373,10 @@ class _MainPageState extends State<MainPage> {
             children: [
               Text(
                 "Clear Sky",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -264,14 +384,27 @@ class _MainPageState extends State<MainPage> {
                   weatherIconPathFromWeatherCode(
                       snapshot.data.data.current.weather.weatherStatusCode),
                   color: Colors.white,
-                  width: 48,
-                  height: 48,
+                  width: 60,
+                  height: 60,
                 ),
               ),
             ],
           ),
         ),
         decoration: AppDecorations.blurRoundBox(),
+      ),
+    );
+  }
+
+  Widget _buildTimeStampWidget(String timeStamp) {
+    return Container(
+      margin: EdgeInsets.only(top: 8),
+      child: Text(
+        "Last Updated : " + updateStatusFromTimeStamp(timeStamp),
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+        ),
       ),
     );
   }
