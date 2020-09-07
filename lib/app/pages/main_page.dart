@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:air_quality_app/resources/gradients_rsc.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
@@ -20,11 +21,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   LocationData currentLiveLocation;
   Future<AirVisualData> airVisualData;
-  bool isStateCountryVisible;
   @override
   void initState() {
     super.initState();
-    isStateCountryVisible = false;
     GeolocationService.getCurrentLocation().then((location) {
       setState(() {
         currentLiveLocation = location;
@@ -44,7 +43,8 @@ class _MainPageState extends State<MainPage> {
       body: Stack(
         children: [
           Container(
-            decoration: AppDecorations.gradientBox(),
+            decoration: AppDecorations.gradientBox(
+                gradientTOFill: AppGradients.defaultGradient),
           ),
           SafeArea(
             child: Padding(
@@ -66,8 +66,14 @@ class _MainPageState extends State<MainPage> {
 
   Expanded _buildPageContent() {
     return Expanded(
-      child: Container(
-        child: _buildCurrentDataWidget(),
+      child: RefreshIndicator(
+        onRefresh: _onRefreshRequested,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            child: _buildCurrentDataWidget(),
+          ),
+        ),
       ),
     );
   }
@@ -94,84 +100,63 @@ class _MainPageState extends State<MainPage> {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                icon: Icon(Icons.refresh),
+                icon: Icon(Icons.menu),
                 color: Colors.white,
-                onPressed: () => _onRefreshButtonClicked(),
+                onPressed: () => _onRefreshRequested(),
               ),
-              Expanded(
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () => setState(() {
-                      isStateCountryVisible = !isStateCountryVisible;
-                    }),
-                    child: FutureBuilder<AirVisualData>(
-                      future: airVisualData,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return Text(
-                            "${snapshot.data.data.city}",
-                            style: TextStyle(
-                                fontSize: 24,
+              FutureBuilder<AirVisualData>(
+                future: airVisualData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return RichText(
+                      text: TextSpan(
+                          text: snapshot.data.data.city,
+                          style: TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                          children: [
+                            TextSpan(
+                              text:
+                                  "   ${snapshot.data.data.state}, ${snapshot.data.data.country}",
+                              style: TextStyle(
+                                fontSize: 16,
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          );
-                        } else {
-                          return Text(
-                            "Loading...",
-                            style: TextStyle(
-                                fontSize: 24,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.more_vert),
-                color: Colors.white,
-                onPressed: () {},
+                              ),
+                            ),
+                          ]),
+                    );
+                  } else {
+                    return Text(
+                      "Loading...",
+                      style: TextStyle(
+                          fontSize: 24,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    );
+                  }
+                },
               ),
             ],
-          ),
-          Visibility(
-            visible: isStateCountryVisible,
-            child: FutureBuilder<AirVisualData>(
-              future: airVisualData,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Text(
-                    "${snapshot.data.data.state}, ${snapshot.data.data.country}",
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  );
-                } else {
-                  return JumpingDotsProgressIndicator(
-                    color: Colors.white,
-                  );
-                }
-              },
-            ),
           ),
         ],
       ),
     );
   }
 
-  void _onRefreshButtonClicked() {
-    GeolocationService.getCurrentLocation().then((location) {
-      setState(() {
-        currentLiveLocation = location;
-        airVisualData = HttpClient().fetchAirVisualData(currentLiveLocation);
-      });
+  Future<void> _onRefreshRequested() async {
+    print("Refresh Requested");
+    setState(() {
+      _doRefreshData();
     });
+  }
+
+  void _doRefreshData() async {
+    currentLiveLocation = await GeolocationService.getCurrentLocation();
+    airVisualData = HttpClient().fetchAirVisualData(currentLiveLocation);
   }
 
   Widget _buildCurrentDataWidget() {
@@ -195,8 +180,10 @@ class _MainPageState extends State<MainPage> {
               ],
             );
           } else {
-            return CircularProgressIndicator(
-              backgroundColor: Colors.white,
+            return Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
             );
           }
         });
