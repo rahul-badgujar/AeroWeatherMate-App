@@ -21,6 +21,8 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   LocationData currentLiveLocation;
   Future<AirVisualData> airVisualData;
+  Drawer appDrawer;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -40,6 +42,8 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: _buildAppDrawer(),
       body: Stack(
         children: [
           Container(
@@ -62,6 +66,22 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
+  }
+
+  Drawer _buildAppDrawer() {
+    appDrawer = Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            child: Text(""),
+            decoration: AppDecorations.gradientBox(
+                gradientTOFill: AppGradients.defaultGradient),
+          )
+        ],
+      ),
+    );
+    return appDrawer;
   }
 
   Expanded _buildPageContent() {
@@ -105,7 +125,7 @@ class _MainPageState extends State<MainPage> {
               IconButton(
                 icon: Icon(Icons.menu),
                 color: Colors.white,
-                onPressed: () => _onRefreshRequested(),
+                onPressed: () => _scaffoldKey.currentState.openDrawer(),
               ),
               FutureBuilder<AirVisualData>(
                 future: airVisualData,
@@ -181,8 +201,11 @@ class _MainPageState extends State<MainPage> {
             );
           } else {
             return Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
               ),
             );
           }
