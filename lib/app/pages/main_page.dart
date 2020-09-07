@@ -48,22 +48,26 @@ class _MainPageState extends State<MainPage> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    children: [
-                      _buildCustomAppBar(),
-                      _buildCurrentDataWidget(),
-                    ],
-                  ),
+                  _buildCustomAppBar(),
+                  _buildPageContent(),
                   _buildSourceCreditWidget(),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Expanded _buildPageContent() {
+    return Expanded(
+      child: Container(
+        child: _buildCurrentDataWidget(),
       ),
     );
   }
@@ -79,7 +83,7 @@ class _MainPageState extends State<MainPage> {
         ),
         Text(
           "AirVisual",
-          style: TextStyle(color: Colors.white, fontSize: 16),
+          style: TextStyle(color: Colors.white, fontSize: 15),
         ),
       ],
     );
@@ -240,7 +244,7 @@ class _MainPageState extends State<MainPage> {
                       "US Pollutant:\n" +
                       "CN AQI:\n" +
                       "CN Pollutant:",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Text(
                   "${snapshot.data.data.current.pollution.aqiUS}\n" +
@@ -249,7 +253,7 @@ class _MainPageState extends State<MainPage> {
                       "${pollutantFromCode(snapshot.data.data.current.pollution.mainPollutantCN)}",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.right,
@@ -304,7 +308,7 @@ class _MainPageState extends State<MainPage> {
                       "Humidity:\n" +
                       "Wind Speed:\n" +
                       "Wind Direction:",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Text(
                   "${snapshot.data.data.current.weather.pressure} hPa\n" +
@@ -313,7 +317,7 @@ class _MainPageState extends State<MainPage> {
                       "${windDirectionFromAngle(snapshot.data.data.current.weather.windDirection)}",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.right,
@@ -403,7 +407,7 @@ class _MainPageState extends State<MainPage> {
         "Last Updated : " + updateStatusFromTimeStamp(timeStamp),
         style: TextStyle(
           color: Colors.white,
-          fontSize: 15,
+          fontSize: 12,
         ),
       ),
     );
