@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:air_quality_app/api/data_models/data.dart';
+import 'package:air_quality_app/api/data_models/forecast.dart';
 import 'package:air_quality_app/api/data_models/pollution.dart';
 import 'package:air_quality_app/api/data_models/weather.dart';
 import 'package:air_quality_app/widgets/main_page_widgets.dart'
@@ -13,6 +14,7 @@ import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
@@ -201,6 +203,7 @@ class _MainPageState extends State<MainPage> {
                 _buildShortDetailWidgets(weatherStatusCode, aqiUS),
                 _buildFullWeatherStatusWidget(snapshot),
                 _buildFullPollutionStatusWidget(snapshot),
+                _buildAqiDataBarChart(snapshot.data.data.forecasts),
               ],
             );
           } else {
@@ -302,4 +305,58 @@ class _MainPageState extends State<MainPage> {
       decoration: AppDecorations.blurRoundBox(),
     );
   }
+
+  Widget _buildAqiDataBarChart(List<Forecast> forecasts) {
+    List<charts.Series<AqiChartDataUS, String>> seriesData =
+        _createAqiChartDataSeries(forecasts);
+    return SizedBox(
+      height: 300,
+      width: 100,
+      child: charts.BarChart(
+        seriesData,
+        animate: true,
+        barGroupingType: charts.BarGroupingType.groupedStacked,
+      ),
+    );
+  }
+
+  List<charts.Series<AqiChartDataUS, String>> _createAqiChartDataSeries(
+      List<Forecast> forecasts) {
+    List<AqiChartDataUS> aqiData = [];
+    if (forecasts == null) {
+      aqiData = [
+        AqiChartDataUS(34, "2016"),
+        AqiChartDataUS(56, "2017"),
+        AqiChartDataUS(54, "2018"),
+        AqiChartDataUS(74, "2019"),
+        AqiChartDataUS(86, "2020"),
+      ];
+    } else {
+      for (Forecast forecast in forecasts) {
+        aqiData.add(AqiChartDataUS(
+            forecast.aqiUS, updateStatusFromTimeStamp(forecast.timeStamp)));
+      }
+    }
+    return [
+      charts.Series(
+        id: "AQI US",
+        data: aqiData,
+        domainFn: (AqiChartDataUS data, _) => data.timeStamp,
+        measureFn: (AqiChartDataUS data, _) => data.aqiUS,
+        colorFn: (_, __) => charts.MaterialPalette.white,
+      ),
+    ];
+  }
+}
+
+class AqiChartDataUS {
+  int aqiUS;
+  String timeStamp;
+  AqiChartDataUS(this.aqiUS, this.timeStamp);
+}
+
+class AqiChartDataCN {
+  int aqiCN;
+  String timeStamp;
+  AqiChartDataCN(this.aqiCN, this.timeStamp);
 }

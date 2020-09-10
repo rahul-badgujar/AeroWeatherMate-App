@@ -10,6 +10,7 @@ Forecast _$ForecastFromJson(Map<String, dynamic> json) {
   return Forecast(
     json['ts'],
     json['aqius'],
+    json['aqicn'],
     json['tp'],
     json['pr'],
     json['hu'],
@@ -22,6 +23,7 @@ Forecast _$ForecastFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$ForecastToJson(Forecast instance) => <String, dynamic>{
       'ts': instance.timeStamp,
       'aqius': instance.aqiUS,
+      'aqicn': instance.aqiCN,
       'tp': instance.temprature,
       'pr': instance.pressure,
       'hu': instance.humidity,

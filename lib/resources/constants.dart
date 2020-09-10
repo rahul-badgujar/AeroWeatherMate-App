@@ -49,6 +49,12 @@ String weatherStatusFromWeatherStatusCode(String code) {
     return "Shower Rain";
   else if (code == "10d" || code == "10n")
     return "Rain";
+  else if (code == "11d" || code == "11n")
+    return "Thunderstorm";
+  else if (code == "13d" || code == "13n")
+    return "Snow";
+  else if (code == "50d" || code == "15n")
+    return "Mist";
   else
     return "Clear Sky";
 }

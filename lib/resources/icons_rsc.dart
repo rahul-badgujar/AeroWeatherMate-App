@@ -14,6 +14,12 @@ String weatherIconPathFromWeatherCode(String code) {
     return "assets/svg/shower.svg";
   else if (code == "10d" || code == "10n")
     return "assets/svg/rain.svg";
+  else if (code == "11d" || code == "11n")
+    return "assets/svg/storm.svg";
+  else if (code == "13d" || code == "13n")
+    return "assets/svg/snow.svg";
+  else if (code == "50d" || code == "15n")
+    return "assets/svg/mist.svg";
   else
     return "assets/svg/rain.svg";
 }

@@ -10,6 +10,9 @@ class Forecast {
   @JsonKey(name: 'aqius')
   final aqiUS;
 
+  @JsonKey(name: 'aqicn')
+  final aqiCN;
+
   @JsonKey(name: 'tp')
   final temprature;
 
@@ -31,6 +34,7 @@ class Forecast {
   Forecast(
       this.timeStamp,
       this.aqiUS,
+      this.aqiCN,
       this.temprature,
       this.pressure,
       this.humidity,
