@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:air_quality_app/api/data_models/data.dart';
 import 'package:air_quality_app/api/data_models/pollution.dart';
 import 'package:air_quality_app/api/data_models/weather.dart';
-import 'package:air_quality_app/main.dart';
 import 'package:air_quality_app/widgets/main_page_widgets.dart'
     as mainpage_widgets;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
@@ -13,7 +12,6 @@ import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
 
 class MainPage extends StatefulWidget {
@@ -251,13 +249,13 @@ class _MainPageState extends State<MainPage> {
             child: Column(
               children: [
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "US AQI", pollutionData.aqiUS),
+                    "US AQI", pollutionData.aqiUS, ""),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "US Pollutant", pollutionData.mainPollutantUS),
+                    "US Pollutant", pollutionData.mainPollutantUS, ""),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "China AQI", pollutionData.aqiCN),
+                    "China AQI", pollutionData.aqiCN, ""),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "China Pollutant", pollutionData.mainPollutantCN),
+                    "China Pollutant", pollutionData.mainPollutantCN, ""),
               ],
             ),
           ),
@@ -283,15 +281,17 @@ class _MainPageState extends State<MainPage> {
             child: Column(
               children: [
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "Atm Pressure", weatherData.pressure),
+                    "Atm Pressure", weatherData.pressure, "hPa"),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "Humidity", weatherData.humidity),
+                    "Humidity", weatherData.humidity, "%"),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "Wind Speed", weatherData.windSpeed),
+                    "Wind Speed", weatherData.windSpeed, "m/s"),
                 mainpage_widgets.buildDataValueDetailWidget(
-                  "Wind Direction",
-                  windDirectionFromAngle(weatherData.windDirection),
-                ),
+                    "Wind Direction",
+                    windDirectionFromAngle(
+                      weatherData.windDirection,
+                    ),
+                    ""),
               ],
             ),
           ),

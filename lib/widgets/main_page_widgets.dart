@@ -16,7 +16,7 @@ Widget buildTimeStampWidget(String timeStamp) {
   );
 }
 
-Widget buildDataValueDetailWidget(String data, dynamic value) {
+Widget buildDataValueDetailWidget(String data, dynamic value, String unit) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -25,7 +25,7 @@ Widget buildDataValueDetailWidget(String data, dynamic value) {
         style: TextStyle(color: Colors.white, fontSize: 16),
       ),
       Text(
-        "$value",
+        "$value $unit",
         style: TextStyle(
             color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
       ),
@@ -65,7 +65,7 @@ Widget buildShortDetailWidget(String heading, String iconPath) {
         child: Column(
           children: [
             Text(
-              "${heading}",
+              "$heading",
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
