@@ -1,7 +1,3 @@
-import 'package:air_quality_app/resources/constants.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-
 String weatherIconPathFromWeatherCode(String code) {
   print(code);
   if (code == "01d")

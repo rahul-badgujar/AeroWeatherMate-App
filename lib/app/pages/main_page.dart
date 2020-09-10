@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/constants.dart';
@@ -8,7 +7,6 @@ import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-import 'package:progress_indicators/progress_indicators.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
 
@@ -58,7 +56,6 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   _buildCustomAppBar(),
                   _buildPageContent(),
-                  _buildSourceCreditWidget(),
                 ],
               ),
             ),
@@ -90,8 +87,11 @@ class _MainPageState extends State<MainPage> {
         onRefresh: _onRefreshRequested,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          child: Container(
-            child: _buildCurrentDataWidget(),
+          child: Column(
+            children: [
+              _buildCurrentDataWidget(),
+              _buildSourceCreditWidget(),
+            ],
           ),
         ),
       ),
@@ -99,19 +99,22 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _buildSourceCreditWidget() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      children: [
-        Text(
-          "source ",
-          style: TextStyle(color: Colors.white, fontSize: 12),
-        ),
-        Text(
-          "AirVisual",
-          style: TextStyle(color: Colors.white, fontSize: 15),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        children: [
+          Text(
+            "source ",
+            style: TextStyle(color: Colors.white, fontSize: 12),
+          ),
+          Text(
+            "AirVisual",
+            style: TextStyle(color: Colors.white, fontSize: 15),
+          ),
+        ],
+      ),
     );
   }
 
