@@ -1,3 +1,26 @@
+class Strings {
+  static const String appName = "Air Quality App";
+  static const String defaultTempScale = "C";
+  static const String defaultPlaceName = "Sinnar";
+  static const String defaultCity = "Nashik";
+  static const String defaultState = "Maharashtra";
+  static const String defaultCountry = "India";
+  static const String defaultWeatherCode = "10d";
+  static const String defaultMainUSPollutant = "o3";
+}
+
+class Numbers {
+  static const int defaultTemprature = 35;
+  static const int defaultAtmPressure = 994;
+  static const double defaultHumidity = 87;
+  static const double defaultWindSpeed = 2;
+  static const int defaultWindDirection = 239;
+  static const int defaultAqiUS = 7;
+  static const double defaultPollutantConcentration = 20;
+  static const int defaultPollutionAqi = 18;
+  static const double defaultWeatherIconSize = 30;
+}
+
 String airQualityFromAqi(int aqi) {
   if (0 <= aqi && aqi <= 50)
     return "Good Air";
@@ -67,27 +90,4 @@ String updateStatusFromTimeStamp(String timeStamp) {
   final String hours = timeStamp.substring(11, 13);
   final String minutes = timeStamp.substring(14, 16);
   return "$hours:$minutes , $day-$month-$year";
-}
-
-class Strings {
-  static const String appName = "Air Quality App";
-  static const String defaultTempScale = "C";
-  static const String defaultPlaceName = "Sinnar";
-  static const String defaultCity = "Nashik";
-  static const String defaultState = "Maharashtra";
-  static const String defaultCountry = "India";
-  static const String defaultWeatherCode = "10d";
-  static const String defaultMainUSPollutant = "o3";
-}
-
-class Numbers {
-  static const int defaultTemprature = 35;
-  static const int defaultAtmPressure = 994;
-  static const double defaultHumidity = 87;
-  static const double defaultWindSpeed = 2;
-  static const int defaultWindDirection = 239;
-  static const int defaultAqiUS = 7;
-  static const double defaultPollutantConcentration = 20;
-  static const int defaultPollutionAqi = 18;
-  static const double defaultWeatherIconSize = 30;
 }

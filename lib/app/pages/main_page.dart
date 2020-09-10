@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'package:air_quality_app/api/data_models/data.dart';
+import 'package:air_quality_app/api/data_models/pollution.dart';
+import 'package:air_quality_app/api/data_models/weather.dart';
+import 'package:air_quality_app/main.dart';
 import 'package:air_quality_app/widgets/main_page_widgets.dart'
     as mainpage_widgets;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
@@ -136,9 +140,10 @@ class _MainPageState extends State<MainPage> {
                 future: airVisualData,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
+                    Data localAreaDetails = snapshot.data.data;
                     return RichText(
                       text: TextSpan(
-                          text: snapshot.data.data.city,
+                          text: "${localAreaDetails.city}",
                           style: TextStyle(
                               fontSize: 24,
                               color: Colors.white,
@@ -146,7 +151,7 @@ class _MainPageState extends State<MainPage> {
                           children: [
                             TextSpan(
                               text:
-                                  "   ${snapshot.data.data.state}, ${snapshot.data.data.country}",
+                                  "   ${localAreaDetails.state}, ${localAreaDetails.country}",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white,
@@ -232,6 +237,7 @@ class _MainPageState extends State<MainPage> {
 
   Container _buildFullPollutionStatusWidget(
       AsyncSnapshot<AirVisualData> snapshot) {
+    Pollution pollutionData = snapshot.data.data.current.pollution;
     return Container(
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.only(top: 18),
@@ -242,28 +248,16 @@ class _MainPageState extends State<MainPage> {
               snapshot.data.data.current.pollution.aqiUS, "aqi"),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Text(
-                  "US AQI:\n" +
-                      "US Pollutant:\n" +
-                      "CN AQI:\n" +
-                      "CN Pollutant:",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                Text(
-                  "${snapshot.data.data.current.pollution.aqiUS}\n" +
-                      "${pollutantFromCode(snapshot.data.data.current.pollution.mainPollutantUS)}\n" +
-                      "${snapshot.data.data.current.pollution.aqiCN}\n" +
-                      "${pollutantFromCode(snapshot.data.data.current.pollution.mainPollutantCN)}",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.right,
-                ),
+                mainpage_widgets.buildDataValueDetailWidget(
+                    "US AQI", pollutionData.aqiUS),
+                mainpage_widgets.buildDataValueDetailWidget(
+                    "US Pollutant", pollutionData.mainPollutantUS),
+                mainpage_widgets.buildDataValueDetailWidget(
+                    "China AQI", pollutionData.aqiCN),
+                mainpage_widgets.buildDataValueDetailWidget(
+                    "China Pollutant", pollutionData.mainPollutantCN),
               ],
             ),
           ),
@@ -277,6 +271,7 @@ class _MainPageState extends State<MainPage> {
 
   Container _buildFullWeatherStatusWidget(
       AsyncSnapshot<AirVisualData> snapshot) {
+    Weather weatherData = snapshot.data.data.current.weather;
     return Container(
       padding: EdgeInsets.all(12),
       child: Column(
@@ -285,27 +280,17 @@ class _MainPageState extends State<MainPage> {
               snapshot.data.data.current.weather.temprature, "°C"),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                Text(
-                  "Atm Pressure:\n" +
-                      "Humidity:\n" +
-                      "Wind Speed:\n" +
-                      "Wind Direction:",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                Text(
-                  "${snapshot.data.data.current.weather.pressure} hPa\n" +
-                      "${snapshot.data.data.current.weather.humidity} %\n" +
-                      "${snapshot.data.data.current.weather.windSpeed} m/s\n" +
-                      "${windDirectionFromAngle(snapshot.data.data.current.weather.windDirection)}",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.right,
+                mainpage_widgets.buildDataValueDetailWidget(
+                    "Atm Pressure", weatherData.pressure),
+                mainpage_widgets.buildDataValueDetailWidget(
+                    "Humidity", weatherData.humidity),
+                mainpage_widgets.buildDataValueDetailWidget(
+                    "Wind Speed", weatherData.windSpeed),
+                mainpage_widgets.buildDataValueDetailWidget(
+                  "Wind Direction",
+                  windDirectionFromAngle(weatherData.windDirection),
                 ),
               ],
             ),

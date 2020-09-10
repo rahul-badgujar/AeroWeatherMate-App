@@ -1,6 +1,4 @@
-import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/resources/constants.dart';
-import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -15,6 +13,23 @@ Widget buildTimeStampWidget(String timeStamp) {
         fontSize: 12,
       ),
     ),
+  );
+}
+
+Widget buildDataValueDetailWidget(String data, dynamic value) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(
+        data + " : ",
+        style: TextStyle(color: Colors.white, fontSize: 16),
+      ),
+      Text(
+        "$value",
+        style: TextStyle(
+            color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    ],
   );
 }
 
