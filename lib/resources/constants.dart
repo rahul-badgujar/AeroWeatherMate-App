@@ -1,15 +1,3 @@
-enum WeatherEnums {
-  ClearSkyDay,
-  ClearSkyNight,
-  FewCloudsDay,
-  FewCloudsNight,
-  ScatteredClouds,
-  BrokenClouds,
-  ShowerRain,
-  RainDay,
-  RainNight
-}
-
 String airQualityFromAqi(int aqi) {
   if (0 <= aqi && aqi <= 50)
     return "Good Air";
@@ -23,6 +11,23 @@ String airQualityFromAqi(int aqi) {
     return "Very Unhealthy Air";
   else
     return "Hazardous Air";
+}
+
+String weatherStatusFromWeatherStatusCode(String code) {
+  if (code == "01d" || code == "01n")
+    return "Clear Sky";
+  else if (code == "02d" || code == "02n")
+    return "Few Clouds";
+  else if (code == "03d" || code == "03n")
+    return "Scattered Clouds";
+  else if (code == "04d" || code == "04n")
+    return "Broken Clouds";
+  else if (code == "09d" || code == "09n")
+    return "Shower Rain";
+  else if (code == "10d" || code == "10n")
+    return "Rain";
+  else
+    return "Clear Sky";
 }
 
 String windDirectionFromAngle(int angle) {
@@ -73,47 +78,6 @@ class Strings {
   static const String defaultCountry = "India";
   static const String defaultWeatherCode = "10d";
   static const String defaultMainUSPollutant = "o3";
-
-  static WeatherEnums weatherEnumFromWeatherCode(String code) {
-    if (code == "01d")
-      return WeatherEnums.ClearSkyDay;
-    else if (code == "01n")
-      return WeatherEnums.ClearSkyNight;
-    else if (code == "02d")
-      return WeatherEnums.FewCloudsDay;
-    else if (code == "02n")
-      return WeatherEnums.FewCloudsNight;
-    else if (code == "03d")
-      return WeatherEnums.ScatteredClouds;
-    else if (code == "04d")
-      return WeatherEnums.BrokenClouds;
-    else if (code == "09d")
-      return WeatherEnums.ShowerRain;
-    else if (code == "10d")
-      return WeatherEnums.RainDay;
-    else if (code == "10n")
-      return WeatherEnums.RainNight;
-    else
-      return WeatherEnums.ClearSkyDay;
-  }
-
-  static String weatherStatusFromWeatherEnum(WeatherEnums enm) {
-    if (enm == WeatherEnums.ClearSkyDay || enm == WeatherEnums.ClearSkyNight)
-      return "Clear Sky";
-    else if (enm == WeatherEnums.FewCloudsDay ||
-        enm == WeatherEnums.FewCloudsNight)
-      return "Few Clouds";
-    else if (enm == WeatherEnums.ScatteredClouds)
-      return "Scattered Clouds";
-    else if (enm == WeatherEnums.BrokenClouds)
-      return "Broken Clouds";
-    else if (enm == WeatherEnums.ShowerRain)
-      return "Shower Rain";
-    else if (enm == WeatherEnums.RainDay || enm == WeatherEnums.RainNight)
-      return "Raining Here";
-    else
-      return "Clear Sky";
-  }
 }
 
 class Numbers {

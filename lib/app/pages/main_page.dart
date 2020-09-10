@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:air_quality_app/widgets/main_page_widgets.dart'
+    as mainpage_widgets;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/constants.dart';
@@ -187,17 +189,13 @@ class _MainPageState extends State<MainPage> {
         future: airVisualData,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            String weatherStatusCode =
+                snapshot.data.data.current.weather.weatherStatusCode;
+            int aqiUS = snapshot.data.data.current.pollution.aqiUS;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildShortWeatherStatusWidget(snapshot),
-                    _buildShortPollutionStatusWidget(snapshot),
-                  ],
-                ),
+                _buildShortDetailWidgets(weatherStatusCode, aqiUS),
                 _buildFullWeatherStatusWidget(snapshot),
                 _buildFullPollutionStatusWidget(snapshot),
               ],
@@ -215,6 +213,23 @@ class _MainPageState extends State<MainPage> {
         });
   }
 
+  Row _buildShortDetailWidgets(String weatherStatusCode, int aqiUS) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        mainpage_widgets.buildShortDetailWidget(
+          weatherStatusFromWeatherStatusCode(weatherStatusCode),
+          weatherIconPathFromWeatherCode(weatherStatusCode),
+        ),
+        mainpage_widgets.buildShortDetailWidget(
+          airQualityFromAqi(aqiUS),
+          pollutionIconPathFromAqi(aqiUS),
+        ),
+      ],
+    );
+  }
+
   Container _buildFullPollutionStatusWidget(
       AsyncSnapshot<AirVisualData> snapshot) {
     return Container(
@@ -223,30 +238,8 @@ class _MainPageState extends State<MainPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${snapshot.data.data.current.pollution.aqiUS}",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 56,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "aqi",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          mainpage_widgets.buildTitleDataWidget(
+              snapshot.data.data.current.pollution.aqiUS, "aqi"),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -274,7 +267,8 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
           ),
-          _buildTimeStampWidget(snapshot.data.data.current.pollution.timeStamp),
+          mainpage_widgets.buildTimeStampWidget(
+              snapshot.data.data.current.pollution.timeStamp),
         ],
       ),
       decoration: AppDecorations.blurRoundBox(),
@@ -287,30 +281,8 @@ class _MainPageState extends State<MainPage> {
       padding: EdgeInsets.all(12),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${snapshot.data.data.current.weather.temprature}",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 56,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "°C",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          mainpage_widgets.buildTitleDataWidget(
+              snapshot.data.data.current.weather.temprature, "°C"),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -338,91 +310,11 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
           ),
-          _buildTimeStampWidget(snapshot.data.data.current.weather.timeStamp),
+          mainpage_widgets.buildTimeStampWidget(
+              snapshot.data.data.current.weather.timeStamp),
         ],
       ),
       decoration: AppDecorations.blurRoundBox(),
-    );
-  }
-
-  Expanded _buildShortPollutionStatusWidget(
-      AsyncSnapshot<AirVisualData> snapshot) {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: [
-              Text(
-                "${airQualityFromAqi(snapshot.data.data.current.pollution.aqiUS)}",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SvgPicture.asset(
-                  pollutionIconPathFromAqi(
-                      snapshot.data.data.current.pollution.aqiUS),
-                  color: Colors.white,
-                  width: 56,
-                  height: 56,
-                ),
-              ),
-            ],
-          ),
-        ),
-        decoration: AppDecorations.blurRoundBox(),
-      ),
-    );
-  }
-
-  Expanded _buildShortWeatherStatusWidget(
-      AsyncSnapshot<AirVisualData> snapshot) {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            children: [
-              Text(
-                "Clear Sky",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SvgPicture.asset(
-                  weatherIconPathFromWeatherCode(
-                      snapshot.data.data.current.weather.weatherStatusCode),
-                  color: Colors.white,
-                  width: 60,
-                  height: 60,
-                ),
-              ),
-            ],
-          ),
-        ),
-        decoration: AppDecorations.blurRoundBox(),
-      ),
-    );
-  }
-
-  Widget _buildTimeStampWidget(String timeStamp) {
-    return Container(
-      margin: EdgeInsets.only(top: 8),
-      child: Text(
-        "Last Updated : " + updateStatusFromTimeStamp(timeStamp),
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-        ),
-      ),
     );
   }
 }
