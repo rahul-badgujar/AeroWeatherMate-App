@@ -33,7 +33,8 @@ class _MainPageState extends State<MainPage> {
     GeolocationService.getCurrentLocation().then((location) {
       setState(() {
         currentLiveLocation = location;
-        airVisualData = HttpClient().fetchAirVisualData(currentLiveLocation);
+        airVisualData = HttpClient()
+            .fetchAirVisualDataUsingCoordinates(currentLiveLocation);
       });
     });
   }
@@ -47,7 +48,6 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: _buildAppDrawer(),
       body: Stack(
         children: [
           Container(
@@ -69,22 +69,6 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
-  }
-
-  Drawer _buildAppDrawer() {
-    appDrawer = Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            child: Text(""),
-            decoration: AppDecorations.gradientBox(
-                gradientTOFill: AppGradients.defaultGradient),
-          )
-        ],
-      ),
-    );
-    return appDrawer;
   }
 
   Expanded _buildPageContent() {
@@ -130,11 +114,15 @@ class _MainPageState extends State<MainPage> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               IconButton(
-                icon: Icon(Icons.menu),
+                icon: Icon(
+                  Icons.add,
+                ),
                 color: Colors.white,
-                onPressed: () => _scaffoldKey.currentState.openDrawer(),
+                onPressed: () => _addCity(),
+                tooltip: "Add City",
               ),
               FutureBuilder<AirVisualData>(
                 future: airVisualData,
@@ -145,7 +133,7 @@ class _MainPageState extends State<MainPage> {
                       text: TextSpan(
                           text: "${localAreaDetails.city}",
                           style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 22,
                               color: Colors.white,
                               fontWeight: FontWeight.bold),
                           children: [
@@ -186,7 +174,8 @@ class _MainPageState extends State<MainPage> {
 
   void _doRefreshData() async {
     currentLiveLocation = await GeolocationService.getCurrentLocation();
-    airVisualData = HttpClient().fetchAirVisualData(currentLiveLocation);
+    airVisualData =
+        HttpClient().fetchAirVisualDataUsingCoordinates(currentLiveLocation);
   }
 
   Widget _buildCurrentDataWidget() {
@@ -304,4 +293,6 @@ class _MainPageState extends State<MainPage> {
       decoration: AppDecorations.blurRoundBox(),
     );
   }
+
+  _addCity() {}
 }

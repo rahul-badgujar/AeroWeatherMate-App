@@ -14,7 +14,8 @@ class HttpClient {
     return _instance;
   }
 
-  Future<AirVisualData> fetchAirVisualData(LocationData location) async {
+  Future<AirVisualData> fetchAirVisualDataUsingCoordinates(
+      LocationData location) async {
     String apiRequestUrl = ApiUrls.nearestCityDataUrl(
         latitude: location.latitude, longitude: location.longitude);
     try {
