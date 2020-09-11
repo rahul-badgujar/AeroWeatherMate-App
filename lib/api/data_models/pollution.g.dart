@@ -15,11 +15,3 @@ Pollution _$PollutionFromJson(Map<String, dynamic> json) {
     json['maincn'],
   );
 }
-
-Map<String, dynamic> _$PollutionToJson(Pollution instance) => <String, dynamic>{
-      'ts': instance.timeStamp,
-      'aqius': instance.aqiUS,
-      'mainus': instance.mainPollutantUS,
-      'aqicn': instance.aqiCN,
-      'maincn': instance.mainPollutantCN,
-    };

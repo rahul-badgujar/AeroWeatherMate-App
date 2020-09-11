@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:air_quality_app/api/data_models/data.dart';
-import 'package:air_quality_app/api/data_models/forecast.dart';
 import 'package:air_quality_app/api/data_models/pollution.dart';
 import 'package:air_quality_app/api/data_models/weather.dart';
 import 'package:air_quality_app/app/pages/add_city_screen.dart';
@@ -295,10 +294,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _addCity() async {
-    final String result = await Navigator.push(
+    final result = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => AddCityScreen()));
-    _scaffoldKey.currentState
-      ..removeCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(result)));
+    if (result != null) {
+      print(result);
+    }
   }
 }

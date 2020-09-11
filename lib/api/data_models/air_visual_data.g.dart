@@ -14,9 +14,3 @@ AirVisualData _$AirVisualDataFromJson(Map<String, dynamic> json) {
         : Data.fromJson(json['data'] as Map<String, dynamic>),
   );
 }
-
-Map<String, dynamic> _$AirVisualDataToJson(AirVisualData instance) =>
-    <String, dynamic>{
-      'status': instance.callStatus,
-      'data': instance.data,
-    };

@@ -18,8 +18,3 @@ History _$HistoryFromJson(Map<String, dynamic> json) {
         ?.toList(),
   );
 }
-
-Map<String, dynamic> _$HistoryToJson(History instance) => <String, dynamic>{
-      'weather': instance.weathers,
-      'pollution': instance.pollutions,
-    };

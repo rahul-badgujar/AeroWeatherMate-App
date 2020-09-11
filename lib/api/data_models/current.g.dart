@@ -16,8 +16,3 @@ Current _$CurrentFromJson(Map<String, dynamic> json) {
         : Pollution.fromJson(json['pollution'] as Map<String, dynamic>),
   );
 }
-
-Map<String, dynamic> _$CurrentToJson(Current instance) => <String, dynamic>{
-      'weather': instance.weather,
-      'pollution': instance.pollution,
-    };

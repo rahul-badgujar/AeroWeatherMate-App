@@ -1,6 +1,4 @@
 import 'package:air_quality_app/api/network/http_client.dart';
-import 'package:air_quality_app/resources/gradients_rsc.dart';
-import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
 
@@ -16,6 +14,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
   String countrySelected;
   String stateSelected;
   String citySelected;
+  bool isSendButtonVisible;
 
   @override
   void initState() {
@@ -25,6 +24,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
     statesListFuture = null;
     citiesListFuture = null;
     countriesListFuture = HttpClient().fetchListOfCountries();
+    isSendButtonVisible = false;
 
     super.initState();
 
@@ -34,31 +34,19 @@ class _AddCityScreenState extends State<AddCityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: AppDecorations.gradientBox(
-                gradientTOFill: AppGradients.defaultGradient),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildCustomAppBar(),
+              _buildPageContents(),
+            ],
           ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildCustomAppBar(),
-                  _buildPageContents(),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
-  }
-
-  void _exitScreen() {
-    Navigator.pop(context);
   }
 
   Widget _buildCustomAppBar() {
@@ -69,14 +57,14 @@ class _AddCityScreenState extends State<AddCityScreen> {
           IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: Colors.black,
             ),
-            onPressed: () => _exitScreen(),
+            onPressed: () => _intruptExitScreen(),
           ),
           Text(
             "Choose City",
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 22,
             ),
@@ -93,6 +81,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
           _buildCountriesSelectionDropdown(),
           _buildStateSelectionDropdown(),
           _buildCitySelectionDropdown(),
+          _buildAddButton(),
         ],
       ),
     );
@@ -121,6 +110,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
                   statesListFuture = HttpClient()
                       .fetchListOfStatesFromCountry(country: countrySelected);
                   citiesListFuture = null;
+                  isSendButtonVisible = false;
                 });
               },
             );
@@ -151,6 +141,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
                 stateSelected = value;
                 setState(() {
                   citySelected = null;
+                  isSendButtonVisible = false;
                   citiesListFuture = HttpClient().fetchListOfCitiesInState(
                       state: stateSelected, country: countrySelected);
                 });
@@ -181,7 +172,9 @@ class _AddCityScreenState extends State<AddCityScreen> {
               onChanged: (String value) {
                 print(value);
                 citySelected = value;
-                setState(() {});
+                setState(() {
+                  isSendButtonVisible = true;
+                });
               },
             );
           } else {
@@ -190,5 +183,27 @@ class _AddCityScreenState extends State<AddCityScreen> {
         },
       ),
     );
+  }
+
+  Widget _buildAddButton() {
+    return Visibility(
+      visible: isSendButtonVisible,
+      child: IconButton(
+          icon: Icon(
+            Icons.check_circle,
+            size: 50,
+            color: Colors.green,
+          ),
+          onPressed: () => _successExitScreen()),
+    );
+  }
+
+  void _successExitScreen() {
+    Navigator.pop(
+        context, <String>[citySelected, stateSelected, countrySelected]);
+  }
+
+  void _intruptExitScreen() {
+    Navigator.pop(context);
   }
 }

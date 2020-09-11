@@ -19,15 +19,3 @@ Forecast _$ForecastFromJson(Map<String, dynamic> json) {
     json['ic'],
   );
 }
-
-Map<String, dynamic> _$ForecastToJson(Forecast instance) => <String, dynamic>{
-      'ts': instance.timeStamp,
-      'aqius': instance.aqiUS,
-      'aqicn': instance.aqiCN,
-      'tp': instance.temprature,
-      'pr': instance.pressure,
-      'hu': instance.humidity,
-      'ws': instance.windSpeed,
-      'wd': instance.windDirection,
-      'ic': instance.weatherStatusCode,
-    };

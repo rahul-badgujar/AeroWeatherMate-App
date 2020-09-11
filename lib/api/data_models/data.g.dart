@@ -24,13 +24,3 @@ Data _$DataFromJson(Map<String, dynamic> json) {
         : History.fromJson(json['history'] as Map<String, dynamic>),
   );
 }
-
-Map<String, dynamic> _$DataToJson(Data instance) => <String, dynamic>{
-      'name': instance.name,
-      'city': instance.city,
-      'state': instance.state,
-      'country': instance.country,
-      'forecast': instance.forecasts,
-      'current': instance.current,
-      'history': instance.history,
-    };

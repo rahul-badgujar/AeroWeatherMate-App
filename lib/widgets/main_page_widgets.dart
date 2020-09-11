@@ -41,7 +41,7 @@ Widget buildTitleDataWidget(int data, String unit) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "${data}",
+            "$data",
             style: TextStyle(
                 color: Colors.white, fontSize: 56, fontWeight: FontWeight.bold),
           ),
