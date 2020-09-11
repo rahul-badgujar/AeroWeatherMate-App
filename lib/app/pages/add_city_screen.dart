@@ -10,12 +10,25 @@ class AddCityScreen extends StatefulWidget {
 }
 
 class _AddCityScreenState extends State<AddCityScreen> {
-  TextEditingController _searchTextController = TextEditingController();
+  Future<List<String>> countriesListFuture;
+  Future<List<String>> statesListFuture;
+  Future<List<String>> citiesListFuture;
+  String countrySelected;
+  String stateSelected;
+  String citySelected;
 
   @override
   void initState() {
-    HttpClient().fetchListOfCitiesInState();
+    countrySelected = null;
+    stateSelected = null;
+    citySelected = null;
+    statesListFuture = null;
+    citiesListFuture = null;
+    countriesListFuture = HttpClient().fetchListOfCountries();
+
     super.initState();
+
+    print("Whole Screen Rebuilded!");
   }
 
   @override
@@ -76,7 +89,102 @@ class _AddCityScreenState extends State<AddCityScreen> {
   Widget _buildPageContents() {
     return Expanded(
       child: Column(
-        children: [],
+        children: [
+          _buildCountriesSelectionDropdown(),
+          _buildStateSelectionDropdown(),
+          _buildCitySelectionDropdown(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCountriesSelectionDropdown() {
+    print("Country Selection Dropdown Rebuilded");
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: FutureBuilder(
+        future: countriesListFuture,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && countriesListFuture != null) {
+            return ddsearch.DropdownSearch(
+              items: snapshot.data,
+              mode: ddsearch.Mode.MENU,
+              label: "Select Country",
+              showSearchBox: true,
+              onChanged: (String value) {
+                print(value);
+                countrySelected = value;
+                setState(() {
+                  stateSelected = null;
+                  citySelected = null;
+                  statesListFuture = HttpClient()
+                      .fetchListOfStatesFromCountry(country: countrySelected);
+                  citiesListFuture = null;
+                });
+              },
+            );
+          } else {
+            return Container();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildStateSelectionDropdown() {
+    print("State Selection Dropdown Rebuilded");
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: FutureBuilder(
+        future: statesListFuture,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && statesListFuture != null) {
+            return ddsearch.DropdownSearch(
+              items: snapshot.data,
+              mode: ddsearch.Mode.MENU,
+              label: "Select State",
+              showSearchBox: true,
+              onChanged: (String value) {
+                print(value);
+                stateSelected = value;
+                setState(() {
+                  citySelected = null;
+                  citiesListFuture = HttpClient().fetchListOfCitiesInState(
+                      state: stateSelected, country: countrySelected);
+                });
+              },
+            );
+          } else {
+            return Container();
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildCitySelectionDropdown() {
+    print("City Selection Dropdown Rebuilded");
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: FutureBuilder(
+        future: citiesListFuture,
+        builder: (context, snapshot) {
+          if (snapshot.hasData && citiesListFuture != null) {
+            return ddsearch.DropdownSearch(
+              items: snapshot.data,
+              mode: ddsearch.Mode.MENU,
+              label: "Select City",
+              showSearchBox: true,
+              onChanged: (String value) {
+                print(value);
+                citySelected = value;
+                setState(() {});
+              },
+            );
+          } else {
+            return Container();
+          }
+        },
       ),
     );
   }

@@ -41,7 +41,7 @@ class HttpClient {
     return null;
   }
 
-  Future<List<String>> fetchListOfContries() async {
+  Future<List<String>> fetchListOfCountries() async {
     String apiRequestUrl = url.countriesListUrl();
     try {
       final http.Response response = await http.get(apiRequestUrl);
@@ -70,8 +70,8 @@ class HttpClient {
     return null;
   }
 
-  Future<List<String>> fetchListOfStatesFromContry({String country}) async {
-    String apiRequestUrl = url.statesListInCountryUrl();
+  Future<List<String>> fetchListOfStatesFromCountry({String country}) async {
+    String apiRequestUrl = url.statesListInCountryUrl(country: country);
     try {
       final http.Response response = await http.get(apiRequestUrl);
       final int statusCode = response.statusCode;
@@ -101,7 +101,8 @@ class HttpClient {
 
   Future<List<String>> fetchListOfCitiesInState(
       {String state, String country}) async {
-    String apiRequestUrl = url.citiesListInStateUrl();
+    String apiRequestUrl =
+        url.citiesListInStateUrl(state: state, country: country);
     try {
       final http.Response response = await http.get(apiRequestUrl);
       final int statusCode = response.statusCode;
