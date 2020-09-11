@@ -15,7 +15,6 @@ import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);

@@ -1,6 +1,8 @@
+import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
+import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
 
 class AddCityScreen extends StatefulWidget {
   @override
@@ -9,6 +11,13 @@ class AddCityScreen extends StatefulWidget {
 
 class _AddCityScreenState extends State<AddCityScreen> {
   TextEditingController _searchTextController = TextEditingController();
+
+  @override
+  void initState() {
+    HttpClient().fetchListOfCitiesInState();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
