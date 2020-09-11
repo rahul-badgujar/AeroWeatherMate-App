@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:air_quality_app/app/pages/main_page.dart';
+import 'package:air_quality_app/app/pages/home_screen.dart';
 
 class AqApp extends StatelessWidget {
   @override

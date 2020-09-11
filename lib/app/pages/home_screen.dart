@@ -294,5 +294,9 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  _addCity() {}
+  void _addCity() {
+    _scaffoldKey.currentState
+      ..removeCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text("Add City")));
+  }
 }
