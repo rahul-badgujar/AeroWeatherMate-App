@@ -24,6 +24,7 @@ class HttpClient {
         if (response.body.isEmpty)
           throw EmptyApiResultException();
         else {
+          print(response.body);
           AirVisualData data =
               AirVisualData.fromJson(json.decode(response.body));
           print("Successful API Call : " + data.toString());
