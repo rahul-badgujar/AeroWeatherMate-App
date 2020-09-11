@@ -111,6 +111,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
               mode: ddsearch.Mode.MENU,
               label: "Select Country",
               showSearchBox: true,
+              selectedItem: countrySelected,
               onChanged: (String value) {
                 print(value);
                 countrySelected = value;
@@ -144,6 +145,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
               mode: ddsearch.Mode.MENU,
               label: "Select State",
               showSearchBox: true,
+              selectedItem: stateSelected,
               onChanged: (String value) {
                 print(value);
                 stateSelected = value;
@@ -175,6 +177,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
               mode: ddsearch.Mode.MENU,
               label: "Select City",
               showSearchBox: true,
+              selectedItem: citySelected,
               onChanged: (String value) {
                 print(value);
                 citySelected = value;
