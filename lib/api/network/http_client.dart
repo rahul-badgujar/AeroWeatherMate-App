@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:air_quality_app/api/exceptions/api_exceptions.dart';
+import 'package:air_quality_app/app/pages/home_screen.dart';
 import 'package:location/location.dart';
 import 'package:air_quality_app/api/network/api_urls.dart' as url;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
@@ -41,9 +42,11 @@ class HttpClient {
   }
 
   Future<AirVisualData> fetchAirVisualDataUsingAreaDetails(
-      {String city, String state, String country}) async {
-    String apiRequestUrl =
-        url.dataUsingCity(city: city, state: state, country: country);
+      City cityDetails) async {
+    String apiRequestUrl = url.dataUsingCity(
+        city: cityDetails.city,
+        state: cityDetails.state,
+        country: cityDetails.country);
     try {
       final http.Response response = await http.get(apiRequestUrl);
       final int statusCode = response.statusCode;

@@ -71,18 +71,42 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Expanded _buildPageContent() {
     return Expanded(
-      child: RefreshIndicator(
-        onRefresh: _onRefreshRequested,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              _buildCurrentDataWidget(),
-              _buildSourceCreditWidget(),
-            ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: RefreshIndicator(
+          onRefresh: _onRefreshRequested,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: _buildDataShowUI(),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDataShowUI() {
+    Future<AirVisualData> futureDataToShow = airVisualData;
+    return FutureBuilder<AirVisualData>(
+      future: futureDataToShow,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Column(
+            children: [
+              _buildCityDetailTitle(snapshot),
+              _buildCurrentDataWidget(snapshot),
+            ],
+          );
+        } else {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 
@@ -116,50 +140,38 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.add,
+                  Icons.menu,
                 ),
                 color: Colors.white,
                 onPressed: () => _addCity(),
-                tooltip: "Add City",
               ),
-              FutureBuilder<AirVisualData>(
-                future: airVisualData,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    Data localAreaDetails = snapshot.data.data;
-                    return RichText(
-                      text: TextSpan(
-                          text: "${localAreaDetails.city}",
-                          style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                          children: [
-                            TextSpan(
-                              text:
-                                  "   ${localAreaDetails.state}, ${localAreaDetails.country}",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ]),
-                    );
-                  } else {
-                    return Text(
-                      "Loading...",
-                      style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    );
-                  }
-                },
+              Text(
+                "AppTitle",
+                style: TextStyle(color: Colors.white, fontSize: 25),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCityDetailTitle(AsyncSnapshot<AirVisualData> snapshot) {
+    Data localAreaDetails = snapshot.data.data;
+    return RichText(
+      text: TextSpan(
+          text: "${localAreaDetails.city}",
+          style: TextStyle(
+              fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold),
+          children: [
+            TextSpan(
+              text: "   ${localAreaDetails.state}, ${localAreaDetails.country}",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
+          ]),
     );
   }
 
@@ -176,33 +188,18 @@ class _HomeScreenState extends State<HomeScreen> {
         HttpClient().fetchAirVisualDataUsingCoordinates(currentLiveLocation);
   }
 
-  Widget _buildCurrentDataWidget() {
-    return FutureBuilder<AirVisualData>(
-        future: airVisualData,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            String weatherStatusCode =
-                snapshot.data.data.current.weather.weatherStatusCode;
-            int aqiUS = snapshot.data.data.current.pollution.aqiUS;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildShortDetailWidgets(weatherStatusCode, aqiUS),
-                _buildFullWeatherStatusWidget(snapshot),
-                _buildFullPollutionStatusWidget(snapshot),
-              ],
-            );
-          } else {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                ),
-              ),
-            );
-          }
-        });
+  Widget _buildCurrentDataWidget(AsyncSnapshot<AirVisualData> snapshot) {
+    String weatherStatusCode =
+        snapshot.data.data.current.weather.weatherStatusCode;
+    int aqiUS = snapshot.data.data.current.pollution.aqiUS;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildShortDetailWidgets(weatherStatusCode, aqiUS),
+        _buildFullWeatherStatusWidget(snapshot),
+        _buildFullPollutionStatusWidget(snapshot),
+      ],
+    );
   }
 
   Row _buildShortDetailWidgets(String weatherStatusCode, int aqiUS) {
@@ -296,14 +293,25 @@ class _HomeScreenState extends State<HomeScreen> {
     final result = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => AddCityScreen()));
     if (result != null) {
-      print(result);
-      List<String> areaDetails = result.split("&");
+      City city = City.fromString(result);
       setState(() {
-        airVisualData = HttpClient().fetchAirVisualDataUsingAreaDetails(
-            city: areaDetails[0],
-            state: areaDetails[1],
-            country: areaDetails[2]);
+        airVisualData = HttpClient().fetchAirVisualDataUsingAreaDetails(city);
       });
     }
+  }
+}
+
+class City {
+  final String city;
+  final String state;
+  final String country;
+  City(this.city, this.state, this.country);
+  factory City.fromString(String str) {
+    List<String> details = str.split("&");
+    return City(details[0], details[1], details[2]);
+  }
+  @override
+  String toString() {
+    return "$city&$state$country";
   }
 }
