@@ -3,6 +3,7 @@ import 'package:air_quality_app/api/data_models/data.dart';
 import 'package:air_quality_app/api/data_models/forecast.dart';
 import 'package:air_quality_app/api/data_models/pollution.dart';
 import 'package:air_quality_app/api/data_models/weather.dart';
+import 'package:air_quality_app/app/pages/add_city_screen.dart';
 import 'package:air_quality_app/widgets/main_page_widgets.dart'
     as mainpage_widgets;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
@@ -16,13 +17,13 @@ import 'package:location/location.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
-class MainPage extends StatefulWidget {
-  MainPage({Key key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  HomeScreen({Key key}) : super(key: key);
   @override
-  _MainPageState createState() => _MainPageState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _HomeScreenState extends State<HomeScreen> {
   LocationData currentLiveLocation;
   Future<AirVisualData> airVisualData;
   Drawer appDrawer;
@@ -294,9 +295,11 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  void _addCity() {
+  void _addCity() async {
+    final String result = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => AddCityScreen()));
     _scaffoldKey.currentState
       ..removeCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text("Add City")));
+      ..showSnackBar(SnackBar(content: Text(result)));
   }
 }
