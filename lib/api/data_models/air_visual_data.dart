@@ -14,5 +14,5 @@ class AirVisualData {
   AirVisualData({this.callStatus, this.data});
 
   factory AirVisualData.fromJson(Map<String, dynamic> json) =>
-      _$AirVisualDataFromJson(json);
+      _$currentAirVisualDataFromJson(json);
 }

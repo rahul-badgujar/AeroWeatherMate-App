@@ -6,7 +6,7 @@ part of 'air_visual_data.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AirVisualData _$AirVisualDataFromJson(Map<String, dynamic> json) {
+AirVisualData _$currentAirVisualDataFromJson(Map<String, dynamic> json) {
   return AirVisualData(
     callStatus: json['status'],
     data: json['data'] == null

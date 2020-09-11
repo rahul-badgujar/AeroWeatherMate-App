@@ -12,6 +12,7 @@ import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:location/location.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
 
@@ -23,17 +24,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   LocationData currentLiveLocation;
-  Future<AirVisualData> airVisualData;
+  Future<AirVisualData> currentAirVisualData;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<City> citiesToShow;
   @override
   void initState() {
+    citiesToShow = [];
     GeolocationService.getCurrentLocation().then((location) {
       setState(() {
         currentLiveLocation = location;
-        airVisualData = HttpClient()
-            .fetchAirVisualDataUsingCoordinates(currentLiveLocation);
+        currentAirVisualData = HttpClient()
+            .fetchcurrentAirVisualDataUsingCoordinates(currentLiveLocation);
       });
     });
+    citiesToShow.add(new City("Nashik", "Maharashtra", "India"));
+    citiesToShow.add(new City("Pimpri", "Maharashtra", "India"));
     super.initState();
   }
 
@@ -59,7 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildCustomAppBar(),
-                  _buildPageContent(),
+                  Expanded(
+                    child: _buildPageContent(),
+                  ),
                 ],
               ),
             ),
@@ -69,23 +76,21 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Expanded _buildPageContent() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: RefreshIndicator(
-          onRefresh: _onRefreshRequested,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: _buildDataShowUI(),
-          ),
-        ),
+  Widget _buildPageContent() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: PageView.builder(
+        itemBuilder: (context, position) {
+          return _buildDataShowUI(citiesToShow[position]);
+        },
+        itemCount: citiesToShow.length,
       ),
     );
   }
 
-  Widget _buildDataShowUI() {
-    Future<AirVisualData> futureDataToShow = airVisualData;
+  Widget _buildDataShowUI(City city) {
+    Future<AirVisualData> futureDataToShow =
+        HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
     return FutureBuilder<AirVisualData>(
       future: futureDataToShow,
       builder: (context, snapshot) {
@@ -184,21 +189,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _doRefreshData() async {
     currentLiveLocation = await GeolocationService.getCurrentLocation();
-    airVisualData =
-        HttpClient().fetchAirVisualDataUsingCoordinates(currentLiveLocation);
+    currentAirVisualData = HttpClient()
+        .fetchcurrentAirVisualDataUsingCoordinates(currentLiveLocation);
   }
 
   Widget _buildCurrentDataWidget(AsyncSnapshot<AirVisualData> snapshot) {
     String weatherStatusCode =
         snapshot.data.data.current.weather.weatherStatusCode;
     int aqiUS = snapshot.data.data.current.pollution.aqiUS;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildShortDetailWidgets(weatherStatusCode, aqiUS),
-        _buildFullWeatherStatusWidget(snapshot),
-        _buildFullPollutionStatusWidget(snapshot),
-      ],
+    return SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildShortDetailWidgets(weatherStatusCode, aqiUS),
+          _buildFullWeatherStatusWidget(snapshot),
+          _buildFullPollutionStatusWidget(snapshot),
+        ],
+      ),
     );
   }
 
@@ -295,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (result != null) {
       City city = City.fromString(result);
       setState(() {
-        airVisualData = HttpClient().fetchAirVisualDataUsingAreaDetails(city);
+        citiesToShow.add(city);
       });
     }
   }
