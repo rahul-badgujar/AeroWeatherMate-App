@@ -24,11 +24,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   LocationData currentLiveLocation;
   Future<AirVisualData> airVisualData;
-  Drawer appDrawer;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
-    super.initState();
     GeolocationService.getCurrentLocation().then((location) {
       setState(() {
         currentLiveLocation = location;
@@ -36,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
             .fetchAirVisualDataUsingCoordinates(currentLiveLocation);
       });
     });
+    super.initState();
   }
 
   @override
@@ -298,6 +297,13 @@ class _HomeScreenState extends State<HomeScreen> {
         context, MaterialPageRoute(builder: (context) => AddCityScreen()));
     if (result != null) {
       print(result);
+      List<String> areaDetails = result.split("&");
+      setState(() {
+        airVisualData = HttpClient().fetchAirVisualDataUsingAreaDetails(
+            city: areaDetails[0],
+            state: areaDetails[1],
+            country: areaDetails[2]);
+      });
     }
   }
 }

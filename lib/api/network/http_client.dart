@@ -27,7 +27,34 @@ class HttpClient {
           print(response.body);
           AirVisualData data =
               AirVisualData.fromJson(json.decode(response.body));
-          print("Successful API Call : " + data.toString());
+          return data;
+        }
+      } else {
+        _handleExceptions(statusCode);
+      }
+    } on Exception catch (exception) {
+      if (exception is SocketException)
+        print(ConnectionException().toString());
+      else if (exception is ApiException) print(exception.toString());
+    }
+    return null;
+  }
+
+  Future<AirVisualData> fetchAirVisualDataUsingAreaDetails(
+      {String city, String state, String country}) async {
+    String apiRequestUrl =
+        url.dataUsingCity(city: city, state: state, country: country);
+    try {
+      final http.Response response = await http.get(apiRequestUrl);
+      final int statusCode = response.statusCode;
+      if (statusCode == 200) {
+        if (response.body.isEmpty)
+          throw EmptyApiResultException();
+        else {
+          print(response.body);
+          AirVisualData data =
+              AirVisualData.fromJson(json.decode(response.body));
+
           return data;
         }
       } else {

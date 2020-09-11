@@ -97,7 +97,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
           if (snapshot.hasData && countriesListFuture != null) {
             return ddsearch.DropdownSearch(
               items: snapshot.data,
-              mode: ddsearch.Mode.MENU,
+              mode: ddsearch.Mode.BOTTOM_SHEET,
               label: "Select Country",
               showSearchBox: true,
               selectedItem: countrySelected,
@@ -132,7 +132,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
           if (snapshot.hasData && statesListFuture != null) {
             return ddsearch.DropdownSearch(
               items: snapshot.data,
-              mode: ddsearch.Mode.MENU,
+              mode: ddsearch.Mode.BOTTOM_SHEET,
               label: "Select State",
               showSearchBox: true,
               selectedItem: stateSelected,
@@ -165,7 +165,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
           if (snapshot.hasData && citiesListFuture != null) {
             return ddsearch.DropdownSearch(
               items: snapshot.data,
-              mode: ddsearch.Mode.MENU,
+              mode: ddsearch.Mode.BOTTOM_SHEET,
               label: "Select City",
               showSearchBox: true,
               selectedItem: citySelected,
@@ -199,8 +199,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
   }
 
   void _successExitScreen() {
-    Navigator.pop(
-        context, <String>[citySelected, stateSelected, countrySelected]);
+    Navigator.pop(context, "$citySelected&$stateSelected&$countrySelected");
   }
 
   void _intruptExitScreen() {
