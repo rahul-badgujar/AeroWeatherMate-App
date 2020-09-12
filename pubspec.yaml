@@ -37,6 +37,7 @@ dependencies:
   gradient_widgets: ^0.5.1
   flutter_svg: ^0.18.1
   dropdown_search: ^0.4.4
+  smooth_page_indicator: ^0.2.0
 
 dev_dependencies:
   flutter_test:

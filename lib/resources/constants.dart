@@ -1,5 +1,5 @@
 class Strings {
-  static const String appName = "Air Quality App";
+  static const String appName = "AeroWeather Mate";
   static const String defaultTempScale = "C";
   static const String defaultPlaceName = "Sinnar";
   static const String defaultCity = "Nashik";

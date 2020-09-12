@@ -7,7 +7,7 @@ import 'package:air_quality_app/widgets/main_page_widgets.dart'
     as mainpage_widgets;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
-import 'package:air_quality_app/resources/constants.dart';
+import 'package:air_quality_app/resources/constants.dart' as consts;
 import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
@@ -16,6 +16,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:location/location.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -32,13 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     citiesToShow = [];
-    /* GeolocationService.getCurrentLocation().then((location) {
-      setState(() {
-        currentLiveLocation = location;
-        currentAirVisualData = HttpClient()
-            .fetchcurrentAirVisualDataUsingCoordinates(currentLiveLocation);
-      });
-    }); */
     /* citiesToShow.add(new City("Nashik", "Maharashtra", "India"));
     citiesToShow.add(new City("Pimpri", "Maharashtra", "India")); */
     super.initState();
@@ -101,10 +95,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDataShowUI(City city) {
-    Future<AirVisualData> futureDataToShow =
+    currentAirVisualData =
         HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
     return FutureBuilder<AirVisualData>(
-      future: futureDataToShow,
+      future: currentAirVisualData,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Column(
@@ -163,11 +157,36 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () => _addCity(),
               ),
               Text(
-                "AppTitle",
-                style: TextStyle(color: Colors.white, fontSize: 25),
+                consts.Strings.appName,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600),
               ),
             ],
           ),
+          Container(
+              padding: const EdgeInsets.only(top: 4),
+              child: Builder(
+                builder: (context) {
+                  if (citiesToShow.length > 0) {
+                    return SmoothPageIndicator(
+                      controller: _citiesPagesController,
+                      count: citiesToShow.length,
+                      effect: WormEffect(
+                        activeDotColor: Colors.white,
+                        dotColor: Colors.white70,
+                        dotHeight: 8,
+                        dotWidth: 8,
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      height: 100,
+                    );
+                  }
+                },
+              )),
         ],
       ),
     );
@@ -228,11 +247,11 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         mainpage_widgets.buildShortDetailWidget(
-          weatherStatusFromWeatherStatusCode(weatherStatusCode),
+          consts.weatherStatusFromWeatherStatusCode(weatherStatusCode),
           weatherIconPathFromWeatherCode(weatherStatusCode),
         ),
         mainpage_widgets.buildShortDetailWidget(
-          airQualityFromAqi(aqiUS),
+          consts.airQualityFromAqi(aqiUS),
           pollutionIconPathFromAqi(aqiUS),
         ),
       ],
@@ -294,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Wind Speed", weatherData.windSpeed, "m/s"),
                 mainpage_widgets.buildDataValueDetailWidget(
                     "Wind Direction",
-                    windDirectionFromAngle(
+                    consts.windDirectionFromAngle(
                       weatherData.windDirection,
                     ),
                     ""),
@@ -322,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => _addCity(),
         ),
         Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(24.0),
           child: Text(
             "No Cities to Show, Add New City",
             style: TextStyle(
