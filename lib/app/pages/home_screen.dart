@@ -29,21 +29,20 @@ class _HomeScreenState extends State<HomeScreen> {
   LocationData currentLiveLocation;
   Future<AirVisualData> currentAirVisualData;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<City> citiesToShow;
+  List<City> citiesToShow = [];
+  List<Future<AirVisualData>> _citiesToShowFutureData = [];
   final PageController _citiesPagesController = PageController();
   int currentPage = 0;
 
   @override
   void initState() {
-    citiesToShow = [];
-    /* citiesToShow.add(new City("Nashik", "Maharashtra", "India"));
-    citiesToShow.add(new City("Pimpri", "Maharashtra", "India")); */
-    _loadCitiesToShow();
+    loadCitiesToShow();
     super.initState();
   }
 
   @override
   void dispose() {
+    _citiesPagesController.dispose();
     super.dispose();
   }
 
@@ -178,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icons.delete,
                   color: Colors.white,
                 ),
-                onPressed: () => _deleteCurrentCityLocally(),
+                onPressed: () => deleteCurrentCityLocally(),
               ),
             ],
           ),
@@ -379,12 +378,12 @@ class _HomeScreenState extends State<HomeScreen> {
         context, MaterialPageRoute(builder: (context) => AddCityScreen()));
     if (result != null) {
       City city = City.fromString(result);
-      await _insertCityLocally(city);
-      _loadCitiesToShow();
+      await insertCityLocally(city);
+      loadCitiesToShow();
     }
   }
 
-  void _insertCityLocally(City city) async {
+  void insertCityLocally(City city) async {
     DatabaseHelper helper = DatabaseHelper();
     int row = await helper.insertCity(city);
     if (row == -1) {
@@ -395,22 +394,26 @@ class _HomeScreenState extends State<HomeScreen> {
     print("After Inserting City : $citiesToShow");
   }
 
-  void _loadCitiesToShow() async {
+  void loadCitiesToShow() async {
     DatabaseHelper helper = DatabaseHelper();
-    List<City> loadedCities = await helper.queryAllCities() ?? null;
+    List<City> loadedCities = await helper.queryAllCities() ?? [];
     setState(() {
       citiesToShow = loadedCities;
-      //currentPage = 0;
+      _citiesToShowFutureData = [];
+      for (City city in citiesToShow) {
+        _citiesToShowFutureData
+            .add(HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city));
+      }
     });
     print("Loaded Cities : $citiesToShow");
   }
 
-  void _deleteCurrentCityLocally() async {
+  void deleteCurrentCityLocally() async {
     DatabaseHelper helper = DatabaseHelper();
     if (citiesToShow != null && citiesToShow.length > 0) {
       int row = await helper.deleteCity(citiesToShow[currentPage]);
       print("City deleted from Row No. : $row");
-      _loadCitiesToShow();
+      await loadCitiesToShow();
     }
     print("After Delete City : $citiesToShow");
   }
