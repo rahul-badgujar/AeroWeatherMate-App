@@ -379,10 +379,8 @@ class _HomeScreenState extends State<HomeScreen> {
         context, MaterialPageRoute(builder: (context) => AddCityScreen()));
     if (result != null) {
       City city = City.fromString(result);
-      setState(() {
-        _insertCityLocally(city);
-        _loadCitiesToShow();
-      });
+      await _insertCityLocally(city);
+      _loadCitiesToShow();
     }
   }
 
@@ -394,6 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       print("city inserted at Row No. : $row");
     }
+    print("After Inserting City : $citiesToShow");
   }
 
   void _loadCitiesToShow() async {
@@ -403,12 +402,16 @@ class _HomeScreenState extends State<HomeScreen> {
       citiesToShow = loadedCities;
       //currentPage = 0;
     });
+    print("Loaded Cities : $citiesToShow");
   }
 
   void _deleteCurrentCityLocally() async {
     DatabaseHelper helper = DatabaseHelper();
-    int row = await helper.deleteCity(citiesToShow[currentPage]);
-    print("City deleted from Row No. : $row");
-    _loadCitiesToShow();
+    if (citiesToShow != null && citiesToShow.length > 0) {
+      int row = await helper.deleteCity(citiesToShow[currentPage]);
+      print("City deleted from Row No. : $row");
+      _loadCitiesToShow();
+    }
+    print("After Delete City : $citiesToShow");
   }
 }
