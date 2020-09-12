@@ -26,7 +26,7 @@ class HttpClient {
         if (response.body.isEmpty)
           throw EmptyApiResultException();
         else {
-          print(response.body);
+          //print(response.body);
           AirVisualData data =
               AirVisualData.fromJson(json.decode(response.body));
           return data;
@@ -55,7 +55,7 @@ class HttpClient {
         if (response.body.isEmpty)
           throw EmptyApiResultException();
         else {
-          print(response.body);
+          //print(response.body);
           AirVisualData data =
               AirVisualData.fromJson(json.decode(response.body));
 
@@ -87,7 +87,7 @@ class HttpClient {
               ?.map((e) => e == null ? null : e["country"])
               ?.toList();
           List<String> countriesList = list.cast<String>().toList();
-          print(countriesList);
+          //print(countriesList);
           return countriesList;
         }
       } else {
@@ -116,7 +116,7 @@ class HttpClient {
               ?.map((e) => e == null ? null : e["state"])
               ?.toList();
           List<String> statesList = list.cast<String>().toList();
-          print(statesList);
+          //print(statesList);
           return statesList;
         }
       } else {
@@ -147,7 +147,7 @@ class HttpClient {
               ?.map((e) => e == null ? null : e["city"])
               ?.toList();
           List<String> citiesList = list.cast<String>().toList();
-          print(citiesList);
+          //print(citiesList);
           return citiesList;
         }
       } else {

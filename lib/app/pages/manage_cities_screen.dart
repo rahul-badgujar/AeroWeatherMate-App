@@ -1,8 +1,11 @@
+import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/app/pages/home_screen.dart';
 import 'package:air_quality_app/services/database_helpers.dart';
+import 'package:air_quality_app/services/geolocation.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
+import 'package:location/location.dart';
 
 class ManageCitiesScreen extends StatefulWidget {
   @override
@@ -13,26 +16,18 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   Future<List<String>> countriesListFuture;
   Future<List<String>> statesListFuture;
   Future<List<String>> citiesListFuture;
-  String countrySelected;
-  String stateSelected;
-  String citySelected;
-  bool isSendButtonVisible;
+  String countrySelected = null;
+  String stateSelected = null;
+  String citySelected = null;
   Map<String, Set<City>> actionMap = {};
 
   @override
   void initState() {
-    countrySelected = null;
-    stateSelected = null;
-    citySelected = null;
-    statesListFuture = null;
-    citiesListFuture = null;
     countriesListFuture = HttpClient().fetchListOfCountries();
-    isSendButtonVisible = false;
-
-    super.initState();
     actionMap[HomeScreen.ADD_CITY_KEY] = Set();
     actionMap[HomeScreen.DELETE_CITY_KEY] = Set();
     print("Whole Screen Rebuilded!");
+    super.initState();
   }
 
   @override
@@ -91,7 +86,10 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   Widget _buildPageContents() {
     return Expanded(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          _buildUserLocationRequestButton(),
           _buildCountriesSelectionDropdown(),
           _buildStateSelectionDropdown(),
           _buildCitySelectionDropdown(),
@@ -124,7 +122,6 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
                   statesListFuture = HttpClient()
                       .fetchListOfStatesFromCountry(country: countrySelected);
                   citiesListFuture = null;
-                  isSendButtonVisible = false;
                 });
               },
             );
@@ -155,7 +152,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
                 stateSelected = value;
                 setState(() {
                   citySelected = null;
-                  isSendButtonVisible = false;
+
                   citiesListFuture = HttpClient().fetchListOfCitiesInState(
                       state: stateSelected, country: countrySelected);
                 });
@@ -185,9 +182,8 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
               selectedItem: citySelected,
               onChanged: (String value) {
                 print(value);
-                citySelected = value;
                 setState(() {
-                  isSendButtonVisible = true;
+                  citySelected = value;
                 });
               },
             );
@@ -201,12 +197,26 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
 
   Widget _buildAddCityDataButton() {
     return Visibility(
-      visible: isSendButtonVisible,
-      child: IconButton(
+      visible: (citySelected != "" && citySelected != null),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: RaisedButton.icon(
+          color: Colors.green,
           icon: Icon(
-            Icons.add_circle,
-            size: 50,
-            color: Colors.green,
+            Icons.add_location,
+            size: 30,
+            color: Colors.white,
+          ),
+          label: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4),
+            child: Text(
+              citySelected == null ? "" : citySelected,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
           onPressed: () {
             if (citySelected != null &&
@@ -215,12 +225,10 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
               City city = City.fromString(
                   "$citySelected&$stateSelected&$countrySelected");
               _addCityForActionAdd(city);
-            } else {
-              setState(() {
-                isSendButtonVisible = false;
-              });
             }
-          }),
+          },
+        ),
+      ),
     );
   }
 
@@ -230,7 +238,6 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
       citySelected = null;
       stateSelected = null;
       countrySelected = null;
-      isSendButtonVisible = false;
     });
   }
 
@@ -240,5 +247,34 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
 
   void _intruptExitScreen() {
     Navigator.pop(context, actionMap);
+  }
+
+  Widget _buildUserLocationRequestButton() {
+    return FlatButton.icon(
+      onPressed: () => _onUserLocationRequestPermitted(),
+      icon: Icon(
+        Icons.location_searching_rounded,
+        size: 24,
+      ),
+      label: Text(
+        "Use Current Location",
+        style: TextStyle(fontSize: 16),
+      ),
+    );
+  }
+
+  Future<void> _onUserLocationRequestPermitted() async {
+    LocationData locationData = await GeolocationService.getCurrentLocation();
+    AirVisualData airVisualData = await HttpClient()
+        .fetchcurrentAirVisualDataUsingCoordinates(locationData);
+    setState(() {
+      countrySelected = airVisualData.data.country;
+      stateSelected = airVisualData.data.state;
+      citySelected = airVisualData.data.city;
+      statesListFuture =
+          HttpClient().fetchListOfStatesFromCountry(country: countrySelected);
+      citiesListFuture = HttpClient().fetchListOfCitiesInState(
+          state: stateSelected, country: countrySelected);
+    });
   }
 }
