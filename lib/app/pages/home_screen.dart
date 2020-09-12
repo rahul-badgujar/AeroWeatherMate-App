@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:air_quality_app/api/data_models/data.dart';
 import 'package:air_quality_app/api/data_models/pollution.dart';
 import 'package:air_quality_app/api/data_models/weather.dart';
-import 'package:air_quality_app/app/pages/add_city_screen.dart';
+import 'package:air_quality_app/app/pages/manage_cities_screen.dart';
 import 'package:air_quality_app/services/database_helpers.dart';
 import 'package:air_quality_app/widgets/main_page_widgets.dart'
     as mainpage_widgets;
@@ -20,6 +20,8 @@ import 'package:air_quality_app/resources/gradients_rsc.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
+  static const String ADD_CITY_KEY = "ADD CITY KEY";
+  static const String DELETE_CITY_KEY = "DELETE CITY KEY";
   HomeScreen({Key key}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -155,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icons.menu,
                 ),
                 color: Colors.white,
-                onPressed: () => _addCity(),
+                onPressed: () => _requestManageCitiesRoute(),
               ),
               Expanded(
                 child: Text(
@@ -169,10 +171,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               IconButton(
                 icon: Icon(
-                  Icons.delete,
+                  Icons.refresh,
                   color: Colors.white,
                 ),
-                onPressed: () => deleteCurrentCityLocally(),
+                onPressed: () => _doRefreshData(),
               ),
             ],
           ),
@@ -225,17 +227,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _onRefreshRequested() async {
-    print("Refresh Requested");
+  Future<void> _doRefreshData() async {
+    Future<AirVisualData> refreshedData = HttpClient()
+        .fetchcurrentAirVisualDataUsingAreaDetails(citiesToShow[currentPage]);
     setState(() {
-      _doRefreshData();
+      _citiesPages[currentPage] = _buildDataShowUI(refreshedData);
     });
-  }
-
-  void _doRefreshData() async {
-    currentLiveLocation = await GeolocationService.getCurrentLocation();
-    currentAirVisualData = HttpClient()
-        .fetchcurrentAirVisualDataUsingCoordinates(currentLiveLocation);
+    print("Current Page Refreshed");
   }
 
   Widget _buildCurrentDataWidget(AsyncSnapshot<AirVisualData> snapshot) {
@@ -352,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 60,
             width: 60,
           ),
-          onTap: () => _addCity(),
+          onTap: () => _requestManageCitiesRoute(),
         ),
         Padding(
           padding: const EdgeInsets.all(24.0),
@@ -368,17 +366,24 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _addCity() async {
-    final result = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => AddCityScreen()));
+  Future<void> _requestManageCitiesRoute() async {
+    final Map<String, List<City>> result = await Navigator.push(context,
+            MaterialPageRoute(builder: (context) => AddCityScreen())) ??
+        null;
     if (result != null) {
-      City city = City.fromString(result);
-      await insertCityLocally(city);
-      loadCitiesToShow();
+      List<City> toAdd = result[HomeScreen.ADD_CITY_KEY];
+      List<City> toDelete = result[HomeScreen.DELETE_CITY_KEY];
+      for (City city in toAdd) {
+        await insertCityLocally(city);
+      }
+      for (City city in toDelete) {
+        await deleteCityLocally(city);
+      }
+      await loadCitiesToShow();
     }
   }
 
-  void insertCityLocally(City city) async {
+  Future<void> insertCityLocally(City city) async {
     DatabaseHelper helper = DatabaseHelper();
     int row = await helper.insertCity(city);
     if (row == -1) {
@@ -389,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
     print("After Inserting City : $citiesToShow");
   }
 
-  void loadCitiesToShow() async {
+  Future<void> loadCitiesToShow() async {
     DatabaseHelper helper = DatabaseHelper();
     List<City> loadedCities = await helper.queryAllCities() ?? [];
     setState(() {
@@ -404,13 +409,11 @@ class _HomeScreenState extends State<HomeScreen> {
     print("Loaded Cities : $citiesToShow");
   }
 
-  void deleteCurrentCityLocally() async {
+  Future<void> deleteCityLocally(City city) async {
     DatabaseHelper helper = DatabaseHelper();
-    if (citiesToShow != null && citiesToShow.length > 0) {
-      int row = await helper.deleteCity(citiesToShow[currentPage]);
-      print("City deleted from Row No. : $row");
-      await loadCitiesToShow();
-    }
+    int row = await helper.deleteCity(city);
+    print("City deleted from Row No. : $row");
+    await loadCitiesToShow();
     print("After Delete City : $citiesToShow");
   }
 }

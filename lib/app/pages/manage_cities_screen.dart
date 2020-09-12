@@ -1,4 +1,6 @@
 import 'package:air_quality_app/api/network/http_client.dart';
+import 'package:air_quality_app/app/pages/home_screen.dart';
+import 'package:air_quality_app/services/database_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
 
@@ -15,6 +17,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
   String stateSelected;
   String citySelected;
   bool isSendButtonVisible;
+  Map<String, List<City>> actionMap = {};
 
   @override
   void initState() {
@@ -27,7 +30,8 @@ class _AddCityScreenState extends State<AddCityScreen> {
     isSendButtonVisible = false;
 
     super.initState();
-
+    actionMap[HomeScreen.ADD_CITY_KEY] = [];
+    actionMap[HomeScreen.DELETE_CITY_KEY] = [];
     print("Whole Screen Rebuilded!");
   }
 
@@ -61,14 +65,24 @@ class _AddCityScreenState extends State<AddCityScreen> {
             ),
             onPressed: () => _intruptExitScreen(),
           ),
-          Text(
-            "Choose City",
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
+          Expanded(
+            child: Text(
+              "Manage Cities",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+              ),
+              textAlign: TextAlign.center,
             ),
-          )
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.check,
+              color: Colors.black,
+            ),
+            onPressed: () => _intruptExitScreen(),
+          ),
         ],
       ),
     );
@@ -81,7 +95,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
           _buildCountriesSelectionDropdown(),
           _buildStateSelectionDropdown(),
           _buildCitySelectionDropdown(),
-          _buildAddButton(),
+          _buildAddCityDataButton(),
         ],
       ),
     );
@@ -185,24 +199,42 @@ class _AddCityScreenState extends State<AddCityScreen> {
     );
   }
 
-  Widget _buildAddButton() {
+  Widget _buildAddCityDataButton() {
     return Visibility(
       visible: isSendButtonVisible,
       child: IconButton(
           icon: Icon(
-            Icons.check_circle,
+            Icons.add_circle,
             size: 50,
             color: Colors.green,
           ),
-          onPressed: () => _successExitScreen()),
+          onPressed: () {
+            City city = City.fromString(
+                "$citySelected&$stateSelected&$countrySelected");
+            _addCityForActionAdd(city);
+          }),
     );
   }
 
+  void _addCityForActionAdd(City city) {
+    if (citySelected != null &&
+        stateSelected != null &&
+        countrySelected != null) {
+      actionMap[HomeScreen.ADD_CITY_KEY].add(city);
+      setState(() {
+        citySelected = null;
+        stateSelected = null;
+        countrySelected = null;
+        isSendButtonVisible = false;
+      });
+    }
+  }
+
   void _successExitScreen() {
-    Navigator.pop(context, "$citySelected,$stateSelected,$countrySelected");
+    Navigator.pop(context, actionMap);
   }
 
   void _intruptExitScreen() {
-    Navigator.pop(context);
+    Navigator.pop(context, actionMap);
   }
 }
