@@ -4,12 +4,12 @@ import 'package:air_quality_app/services/database_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
 
-class AddCityScreen extends StatefulWidget {
+class ManageCitiesScreen extends StatefulWidget {
   @override
-  _AddCityScreenState createState() => _AddCityScreenState();
+  _ManageCitiesScreenState createState() => _ManageCitiesScreenState();
 }
 
-class _AddCityScreenState extends State<AddCityScreen> {
+class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   Future<List<String>> countriesListFuture;
   Future<List<String>> statesListFuture;
   Future<List<String>> citiesListFuture;
@@ -17,7 +17,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
   String stateSelected;
   String citySelected;
   bool isSendButtonVisible;
-  Map<String, List<City>> actionMap = {};
+  Map<String, Set<City>> actionMap = {};
 
   @override
   void initState() {
@@ -30,8 +30,8 @@ class _AddCityScreenState extends State<AddCityScreen> {
     isSendButtonVisible = false;
 
     super.initState();
-    actionMap[HomeScreen.ADD_CITY_KEY] = [];
-    actionMap[HomeScreen.DELETE_CITY_KEY] = [];
+    actionMap[HomeScreen.ADD_CITY_KEY] = Set();
+    actionMap[HomeScreen.DELETE_CITY_KEY] = Set();
     print("Whole Screen Rebuilded!");
   }
 
@@ -209,25 +209,29 @@ class _AddCityScreenState extends State<AddCityScreen> {
             color: Colors.green,
           ),
           onPressed: () {
-            City city = City.fromString(
-                "$citySelected&$stateSelected&$countrySelected");
-            _addCityForActionAdd(city);
+            if (citySelected != null &&
+                stateSelected != null &&
+                countrySelected != null) {
+              City city = City.fromString(
+                  "$citySelected&$stateSelected&$countrySelected");
+              _addCityForActionAdd(city);
+            } else {
+              setState(() {
+                isSendButtonVisible = false;
+              });
+            }
           }),
     );
   }
 
   void _addCityForActionAdd(City city) {
-    if (citySelected != null &&
-        stateSelected != null &&
-        countrySelected != null) {
-      actionMap[HomeScreen.ADD_CITY_KEY].add(city);
-      setState(() {
-        citySelected = null;
-        stateSelected = null;
-        countrySelected = null;
-        isSendButtonVisible = false;
-      });
-    }
+    actionMap[HomeScreen.ADD_CITY_KEY].add(city);
+    setState(() {
+      citySelected = null;
+      stateSelected = null;
+      countrySelected = null;
+      isSendButtonVisible = false;
+    });
   }
 
   void _successExitScreen() {

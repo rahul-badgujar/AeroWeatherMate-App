@@ -367,12 +367,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _requestManageCitiesRoute() async {
-    final Map<String, List<City>> result = await Navigator.push(context,
-            MaterialPageRoute(builder: (context) => AddCityScreen())) ??
+    final Map<String, Set<City>> result = await Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ManageCitiesScreen())) ??
         null;
     if (result != null) {
-      List<City> toAdd = result[HomeScreen.ADD_CITY_KEY];
-      List<City> toDelete = result[HomeScreen.DELETE_CITY_KEY];
+      Set<City> toAdd = result[HomeScreen.ADD_CITY_KEY];
+      Set<City> toDelete = result[HomeScreen.DELETE_CITY_KEY];
       for (City city in toAdd) {
         await insertCityLocally(city);
       }
