@@ -13,6 +13,7 @@ import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:location/location.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart';
 
@@ -27,18 +28,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<AirVisualData> currentAirVisualData;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<City> citiesToShow;
+  final PageController _citiesPagesController = PageController();
   @override
   void initState() {
     citiesToShow = [];
-    GeolocationService.getCurrentLocation().then((location) {
+    /* GeolocationService.getCurrentLocation().then((location) {
       setState(() {
         currentLiveLocation = location;
         currentAirVisualData = HttpClient()
             .fetchcurrentAirVisualDataUsingCoordinates(currentLiveLocation);
       });
-    });
-    citiesToShow.add(new City("Nashik", "Maharashtra", "India"));
-    citiesToShow.add(new City("Pimpri", "Maharashtra", "India"));
+    }); */
+    /* citiesToShow.add(new City("Nashik", "Maharashtra", "India"));
+    citiesToShow.add(new City("Pimpri", "Maharashtra", "India")); */
     super.initState();
   }
 
@@ -61,7 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _buildCustomAppBar(),
                   Expanded(
@@ -79,11 +82,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPageContent() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
-      child: PageView.builder(
-        itemBuilder: (context, position) {
-          return _buildDataShowUI(citiesToShow[position]);
+      child: Builder(
+        builder: (context) {
+          if (citiesToShow.length > 0) {
+            return PageView.builder(
+              itemBuilder: (context, position) {
+                return _buildDataShowUI(citiesToShow[position]);
+              },
+              itemCount: citiesToShow.length,
+              controller: _citiesPagesController,
+            );
+          } else {
+            return _buildNoCityToShowScreen();
+          }
         },
-        itemCount: citiesToShow.length,
       ),
     );
   }
@@ -294,6 +306,32 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       decoration: AppDecorations.blurRoundBox(),
+    );
+  }
+
+  Widget _buildNoCityToShowScreen() {
+    return Column(
+      children: [
+        GestureDetector(
+          child: SvgPicture.asset(
+            "assets/svg/add_location.svg",
+            color: Colors.white,
+            height: 60,
+            width: 60,
+          ),
+          onTap: () => _addCity(),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            "No Cities to Show, Add New City",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
