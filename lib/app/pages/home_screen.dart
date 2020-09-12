@@ -3,6 +3,7 @@ import 'package:air_quality_app/api/data_models/data.dart';
 import 'package:air_quality_app/api/data_models/pollution.dart';
 import 'package:air_quality_app/api/data_models/weather.dart';
 import 'package:air_quality_app/app/pages/add_city_screen.dart';
+import 'package:air_quality_app/services/database_helpers.dart';
 import 'package:air_quality_app/widgets/main_page_widgets.dart'
     as mainpage_widgets;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
@@ -30,11 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<City> citiesToShow;
   final PageController _citiesPagesController = PageController();
+  int currentPage = 0;
+
   @override
   void initState() {
     citiesToShow = [];
     /* citiesToShow.add(new City("Nashik", "Maharashtra", "India"));
     citiesToShow.add(new City("Pimpri", "Maharashtra", "India")); */
+    _loadCitiesToShow();
     super.initState();
   }
 
@@ -78,16 +82,19 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Builder(
         builder: (context) {
-          if (citiesToShow.length > 0) {
+          if (citiesToShow == null || citiesToShow.length == 0) {
+            return _buildNoCityToShowScreen();
+          } else {
             return PageView.builder(
               itemBuilder: (context, position) {
                 return _buildDataShowUI(citiesToShow[position]);
               },
               itemCount: citiesToShow.length,
               controller: _citiesPagesController,
+              onPageChanged: (int page) {
+                currentPage = page;
+              },
             );
-          } else {
-            return _buildNoCityToShowScreen();
           }
         },
       ),
@@ -156,37 +163,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.white,
                 onPressed: () => _addCity(),
               ),
-              Text(
-                consts.Strings.appName,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600),
+              Expanded(
+                child: Text(
+                  consts.Strings.appName,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+                onPressed: () => _deleteCurrentCityLocally(),
               ),
             ],
           ),
           Container(
-              padding: const EdgeInsets.only(top: 4),
-              child: Builder(
-                builder: (context) {
-                  if (citiesToShow.length > 0) {
-                    return SmoothPageIndicator(
-                      controller: _citiesPagesController,
-                      count: citiesToShow.length,
-                      effect: WormEffect(
-                        activeDotColor: Colors.white,
-                        dotColor: Colors.white70,
-                        dotHeight: 8,
-                        dotWidth: 8,
-                      ),
-                    );
-                  } else {
-                    return Container(
-                      height: 100,
-                    );
-                  }
-                },
-              )),
+            padding: const EdgeInsets.only(top: 4),
+            child: Builder(
+              builder: (context) {
+                if (citiesToShow == null || citiesToShow.length == 0) {
+                  return Container(
+                    height: 100,
+                  );
+                } else {
+                  return SmoothPageIndicator(
+                    controller: _citiesPagesController,
+                    count: citiesToShow.length,
+                    effect: WormEffect(
+                      activeDotColor: Colors.white,
+                      dotColor: Colors.white70,
+                      dotHeight: 8,
+                      dotWidth: 8,
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -194,20 +212,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCityDetailTitle(AsyncSnapshot<AirVisualData> snapshot) {
     Data localAreaDetails = snapshot.data.data;
+
     return RichText(
       text: TextSpan(
-          text: "${localAreaDetails.city}",
-          style: TextStyle(
-              fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold),
-          children: [
-            TextSpan(
-              text: "   ${localAreaDetails.state}, ${localAreaDetails.country}",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-              ),
+        text: "${localAreaDetails.city}",
+        style: TextStyle(
+            fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold),
+        children: [
+          TextSpan(
+            text: "   ${localAreaDetails.state}, ${localAreaDetails.country}",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
             ),
-          ]),
+          ),
+        ],
+      ),
     );
   }
 
@@ -360,23 +380,35 @@ class _HomeScreenState extends State<HomeScreen> {
     if (result != null) {
       City city = City.fromString(result);
       setState(() {
-        citiesToShow.add(city);
+        _insertCityLocally(city);
+        _loadCitiesToShow();
       });
     }
   }
-}
 
-class City {
-  final String city;
-  final String state;
-  final String country;
-  City(this.city, this.state, this.country);
-  factory City.fromString(String str) {
-    List<String> details = str.split("&");
-    return City(details[0], details[1], details[2]);
+  void _insertCityLocally(City city) async {
+    DatabaseHelper helper = DatabaseHelper();
+    int row = await helper.insertCity(city);
+    if (row == -1) {
+      print("City already Present in Database");
+    } else {
+      print("city inserted at Row No. : $row");
+    }
   }
-  @override
-  String toString() {
-    return "$city&$state$country";
+
+  void _loadCitiesToShow() async {
+    DatabaseHelper helper = DatabaseHelper();
+    List<City> loadedCities = await helper.queryAllCities() ?? null;
+    setState(() {
+      citiesToShow = loadedCities;
+      //currentPage = 0;
+    });
+  }
+
+  void _deleteCurrentCityLocally() async {
+    DatabaseHelper helper = DatabaseHelper();
+    int row = await helper.deleteCity(citiesToShow[currentPage]);
+    print("City deleted from Row No. : $row");
+    _loadCitiesToShow();
   }
 }
