@@ -30,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<AirVisualData> currentAirVisualData;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<City> citiesToShow = [];
-  List<Future<AirVisualData>> _citiesToShowFutureData = [];
   List<FutureBuilder<AirVisualData>> _citiesPages = [];
   final PageController _citiesPagesController = PageController();
   int currentPage = 0;
@@ -395,12 +394,10 @@ class _HomeScreenState extends State<HomeScreen> {
     List<City> loadedCities = await helper.queryAllCities() ?? [];
     setState(() {
       citiesToShow = loadedCities;
-      _citiesToShowFutureData = [];
       _citiesPages = [];
       for (City city in citiesToShow) {
         Future<AirVisualData> fetchedData =
             HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
-        _citiesToShowFutureData.add(fetchedData);
         _citiesPages.add(_buildDataShowUI(fetchedData));
       }
     });
