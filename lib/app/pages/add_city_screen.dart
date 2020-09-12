@@ -199,7 +199,7 @@ class _AddCityScreenState extends State<AddCityScreen> {
   }
 
   void _successExitScreen() {
-    Navigator.pop(context, "$citySelected&$stateSelected&$countrySelected");
+    Navigator.pop(context, "$citySelected,$stateSelected,$countrySelected");
   }
 
   void _intruptExitScreen() {

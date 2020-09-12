@@ -23,7 +23,7 @@ class City {
       this.country = null});
 
   factory City.fromString(String str) {
-    List<String> details = str.split("&");
+    List<String> details = str.split(",");
     City city = City(city: details[0], state: details[1], country: details[2]);
     return city;
   }
@@ -52,7 +52,7 @@ class City {
 
   @override
   String toString() {
-    return "$city&$state$country";
+    return "$city,$state,$country";
   }
 }
 

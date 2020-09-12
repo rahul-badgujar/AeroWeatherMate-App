@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<City> citiesToShow = [];
   List<Future<AirVisualData>> _citiesToShowFutureData = [];
+  List<FutureBuilder<AirVisualData>> _citiesPages = [];
   final PageController _citiesPagesController = PageController();
   int currentPage = 0;
 
@@ -84,11 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
           if (citiesToShow == null || citiesToShow.length == 0) {
             return _buildNoCityToShowScreen();
           } else {
-            return PageView.builder(
-              itemBuilder: (context, position) {
-                return _buildDataShowUI(citiesToShow[position]);
-              },
-              itemCount: citiesToShow.length,
+            return PageView(
+              children: _citiesPages,
               controller: _citiesPagesController,
               onPageChanged: (int page) {
                 currentPage = page;
@@ -100,11 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDataShowUI(City city) {
-    currentAirVisualData =
-        HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
+  Widget _buildDataShowUI(Future<AirVisualData> dataFuture) {
     return FutureBuilder<AirVisualData>(
-      future: currentAirVisualData,
+      future: dataFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Column(
@@ -192,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else {
                   return SmoothPageIndicator(
                     controller: _citiesPagesController,
-                    count: citiesToShow.length,
+                    count: _citiesPages.length,
                     effect: WormEffect(
                       activeDotColor: Colors.white,
                       dotColor: Colors.white70,
@@ -400,9 +396,12 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       citiesToShow = loadedCities;
       _citiesToShowFutureData = [];
+      _citiesPages = [];
       for (City city in citiesToShow) {
-        _citiesToShowFutureData
-            .add(HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city));
+        Future<AirVisualData> fetchedData =
+            HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
+        _citiesToShowFutureData.add(fetchedData);
+        _citiesPages.add(_buildDataShowUI(fetchedData));
       }
     });
     print("Loaded Cities : $citiesToShow");
