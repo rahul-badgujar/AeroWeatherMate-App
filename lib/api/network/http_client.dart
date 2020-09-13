@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:air_quality_app/api/exceptions/api_exceptions.dart';
-import 'package:air_quality_app/app/pages/home_screen.dart';
 import 'package:air_quality_app/services/database_helpers.dart';
 import 'package:location/location.dart';
 import 'package:air_quality_app/api/network/api_urls.dart' as url;

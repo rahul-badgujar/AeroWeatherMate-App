@@ -124,26 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSourceCreditWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        children: [
-          Text(
-            "source ",
-            style: TextStyle(color: Colors.white, fontSize: 12),
-          ),
-          Text(
-            "AirVisual",
-            style: TextStyle(color: Colors.white, fontSize: 15),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildCustomAppBar() {
     return Container(
       child: Column(

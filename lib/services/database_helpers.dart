@@ -17,11 +17,12 @@ class City {
   final String state;
   final String country;
 
-  City(
-      {this.id = null,
-      this.city = null,
-      this.state = null,
-      this.country = null});
+  City({
+    this.id,
+    this.city,
+    this.state,
+    this.country,
+  });
 
   factory City.fromString(String str) {
     List<String> details = str.split("&");
@@ -133,7 +134,6 @@ class DatabaseHelper {
           found?.map((e) => e == null ? null : City.fromMap(e))?.toList();
       return cities;
     }
-    ;
     return null;
   }
 
