@@ -1,4 +1,5 @@
 import 'package:air_quality_app/app/pages/home_screen.dart';
+import 'package:air_quality_app/app/pages/manage_cities_screen.dart';
 import 'package:air_quality_app/ui/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/resources/constants.dart' show Strings;
@@ -12,7 +13,7 @@ class AeroWeatherMateApp extends StatelessWidget {
       title: Strings.appName,
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      home: HomeScreen(),
+      home: ManageCitiesScreen(),
     );
   }
 }
