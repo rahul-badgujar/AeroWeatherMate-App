@@ -13,17 +13,10 @@ class ManageCitiesScreen extends StatefulWidget {
 }
 
 class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
-  Future<List<String>> countriesListFuture;
-  Future<List<String>> statesListFuture;
-  Future<List<String>> citiesListFuture;
-  String countrySelected = null;
-  String stateSelected = null;
-  String citySelected = null;
   Map<String, Set<City>> actionMap = {};
 
   @override
   void initState() {
-    countriesListFuture = HttpClient().fetchListOfCountries();
     actionMap[HomeScreen.ADD_CITY_KEY] = Set();
     actionMap[HomeScreen.DELETE_CITY_KEY] = Set();
     print("Whole Screen Rebuilded!");
@@ -89,156 +82,37 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildUserLocationRequestButton(),
-          _buildCountriesSelectionDropdown(),
-          _buildStateSelectionDropdown(),
-          _buildCitySelectionDropdown(),
-          _buildAddCityDataButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCountriesSelectionDropdown() {
-    print("Country Selection Dropdown Rebuilded");
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: FutureBuilder(
-        future: countriesListFuture,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && countriesListFuture != null) {
-            return ddsearch.DropdownSearch(
-              items: snapshot.data,
-              mode: ddsearch.Mode.BOTTOM_SHEET,
-              label: "Select Country",
-              showSearchBox: true,
-              selectedItem: countrySelected,
-              onChanged: (String value) {
-                print(value);
-                countrySelected = value;
-                setState(() {
-                  stateSelected = null;
-                  citySelected = null;
-                  statesListFuture = HttpClient()
-                      .fetchListOfStatesFromCountry(country: countrySelected);
-                  citiesListFuture = null;
-                });
-              },
-            );
-          } else {
-            return Container();
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildStateSelectionDropdown() {
-    print("State Selection Dropdown Rebuilded");
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: FutureBuilder(
-        future: statesListFuture,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && statesListFuture != null) {
-            return ddsearch.DropdownSearch(
-              items: snapshot.data,
-              mode: ddsearch.Mode.BOTTOM_SHEET,
-              label: "Select State",
-              showSearchBox: true,
-              selectedItem: stateSelected,
-              onChanged: (String value) {
-                print(value);
-                stateSelected = value;
-                setState(() {
-                  citySelected = null;
-
-                  citiesListFuture = HttpClient().fetchListOfCitiesInState(
-                      state: stateSelected, country: countrySelected);
-                });
-              },
-            );
-          } else {
-            return Container();
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildCitySelectionDropdown() {
-    print("City Selection Dropdown Rebuilded");
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: FutureBuilder(
-        future: citiesListFuture,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && citiesListFuture != null) {
-            return ddsearch.DropdownSearch(
-              items: snapshot.data,
-              mode: ddsearch.Mode.BOTTOM_SHEET,
-              label: "Select City",
-              showSearchBox: true,
-              selectedItem: citySelected,
-              onChanged: (String value) {
-                print(value);
-                setState(() {
-                  citySelected = value;
-                });
-              },
-            );
-          } else {
-            return Container();
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildAddCityDataButton() {
-    return Visibility(
-      visible: (citySelected != "" && citySelected != null),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: RaisedButton.icon(
-          color: Colors.green,
-          icon: Icon(
-            Icons.add_location,
-            size: 30,
-            color: Colors.white,
-          ),
-          label: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4),
+          FlatButton(
+            color: Colors.blue,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return NewCityFormDialog();
+                },
+              ).then((result) {
+                if (result is City) {
+                  _addCityForActionAdd(result);
+                }
+              });
+            },
             child: Text(
-              citySelected == null ? "" : citySelected,
+              "Open Form",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 18,
+                fontSize: 15,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
-          onPressed: () {
-            if (citySelected != null &&
-                stateSelected != null &&
-                countrySelected != null) {
-              City city = City.fromString(
-                  "$citySelected&$stateSelected&$countrySelected");
-              _addCityForActionAdd(city);
-            }
-          },
-        ),
+        ],
       ),
     );
   }
 
   void _addCityForActionAdd(City city) {
     actionMap[HomeScreen.ADD_CITY_KEY].add(city);
-    setState(() {
-      citySelected = null;
-      stateSelected = null;
-      countrySelected = null;
-    });
+    print("added City : $city");
+    setState(() {});
   }
 
   void _successExitScreen() {
@@ -248,10 +122,58 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   void _intruptExitScreen() {
     Navigator.pop(context, actionMap);
   }
+}
+
+class NewCityFormDialog extends StatefulWidget {
+  @override
+  _NewCityFormStateDialog createState() => _NewCityFormStateDialog();
+}
+
+class _NewCityFormStateDialog extends State<NewCityFormDialog> {
+  List<String> countriesList = <String>[];
+  List<String> statesList = <String>[];
+  List<String> citiesList = <String>[];
+  String countrySelected = "";
+  String stateSelected = "";
+  String citySelected = "";
+  bool isAddCityButtonActive = false;
+
+  @override
+  void initState() {
+    HttpClient().fetchListOfCountries().then((fetchedCountries) {
+      setState(() {
+        countriesList = fetchedCountries ?? <String>[];
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      content: _buildFormContents(),
+    );
+  }
+
+  Widget _buildFormContents() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildUserLocationRequestButton(),
+        _buildCountriesSelectionDropdown(),
+        _buildStateSelectionDropdown(),
+        _buildCitySelectionDropdown(),
+        _buildAddCityDataButton(),
+      ],
+    );
+  }
 
   Widget _buildUserLocationRequestButton() {
     return FlatButton.icon(
-      onPressed: () => _onUserLocationRequestPermitted(),
+      onPressed: () {
+        _onUserLocationRequestPermitted();
+      },
       icon: Icon(
         Icons.location_searching_rounded,
         size: 24,
@@ -263,18 +185,132 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
     );
   }
 
+  Widget _buildCountriesSelectionDropdown() {
+    print("Country Selection Dropdown Rebuilded");
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ddsearch.DropdownSearch(
+        items: countriesList ?? <String>[],
+        mode: ddsearch.Mode.BOTTOM_SHEET,
+        selectedItem: countrySelected ?? "",
+        label: "Select Country",
+        showSearchBox: true,
+        onChanged: (String value) {
+          countrySelected = value;
+          HttpClient()
+              .fetchListOfStatesFromCountry(country: countrySelected)
+              .then((fetchedStates) {
+            setState(() {
+              statesList = fetchedStates ?? <String>[];
+              stateSelected = "";
+              citiesList = <String>[];
+              citySelected = "";
+              isAddCityButtonActive = false;
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildStateSelectionDropdown() {
+    print("State Selection Dropdown Rebuilded");
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ddsearch.DropdownSearch(
+        items: statesList ?? <String>[],
+        mode: ddsearch.Mode.BOTTOM_SHEET,
+        label: "Select State",
+        showSearchBox: true,
+        selectedItem: stateSelected ?? "",
+        onChanged: (String value) {
+          stateSelected = value;
+          HttpClient()
+              .fetchListOfCitiesInState(
+                  state: stateSelected, country: countrySelected)
+              .then((fetchedCities) {
+            setState(() {
+              citiesList = fetchedCities ?? <String>[];
+              citySelected = "";
+              isAddCityButtonActive = false;
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildCitySelectionDropdown() {
+    print("City Selection Dropdown Rebuilded");
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ddsearch.DropdownSearch(
+        items: citiesList ?? <String>[],
+        mode: ddsearch.Mode.BOTTOM_SHEET,
+        label: "Select City",
+        showSearchBox: true,
+        selectedItem: citySelected ?? "",
+        onChanged: (String value) {
+          citySelected = value;
+          setState(() {
+            isAddCityButtonActive = true;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildAddCityDataButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RaisedButton.icon(
+        color: Colors.green,
+        disabledColor: Colors.black38,
+        icon: Icon(
+          Icons.add_location,
+          size: 30,
+          color: Colors.white,
+        ),
+        label: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4),
+          child: Text(
+            citySelected ?? "",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        onPressed: isAddCityButtonActive == false
+            ? null
+            : () {
+                Navigator.pop(
+                    context,
+                    City(
+                        city: citySelected,
+                        state: stateSelected,
+                        country: countrySelected));
+              },
+      ),
+    );
+  }
+
   Future<void> _onUserLocationRequestPermitted() async {
     LocationData locationData = await GeolocationService.getCurrentLocation();
     AirVisualData airVisualData = await HttpClient()
         .fetchcurrentAirVisualDataUsingCoordinates(locationData);
+    countrySelected = airVisualData.data.country;
+    stateSelected = airVisualData.data.state;
+    citySelected = airVisualData.data.city;
+    statesList = await HttpClient()
+        .fetchListOfStatesFromCountry(country: countrySelected);
+    citiesList = await HttpClient().fetchListOfCitiesInState(
+      state: stateSelected,
+      country: countrySelected,
+    );
     setState(() {
-      countrySelected = airVisualData.data.country;
-      stateSelected = airVisualData.data.state;
-      citySelected = airVisualData.data.city;
-      statesListFuture =
-          HttpClient().fetchListOfStatesFromCountry(country: countrySelected);
-      citiesListFuture = HttpClient().fetchListOfCitiesInState(
-          state: stateSelected, country: countrySelected);
+      isAddCityButtonActive = true;
     });
   }
 }
