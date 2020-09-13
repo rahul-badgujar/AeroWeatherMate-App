@@ -3,6 +3,7 @@ import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/app/pages/home_screen.dart';
 import 'package:air_quality_app/services/database_helpers.dart';
 import 'package:air_quality_app/services/geolocation.dart';
+import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
 import 'package:location/location.dart';
@@ -26,17 +27,32 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildCustomAppBar(),
-              _buildPageContents(),
-            ],
+      body: Stack(
+        children: [
+          Container(
+            decoration: AppDecorations.gradientBox(),
           ),
-        ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildCustomAppBar(),
+                  Expanded(
+                    child: _buildPageContents(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 24,
+            left: 120,
+            right: 120,
+            child: _buildAddNewCityButton(),
+          )
+        ],
       ),
     );
   }
@@ -49,7 +65,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
           IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: Colors.black,
+              color: Colors.white,
             ),
             onPressed: () => _intruptExitScreen(),
           ),
@@ -57,19 +73,12 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
             child: Text(
               "Manage Cities",
               style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
               ),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.start,
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.check,
-              color: Colors.black,
-            ),
-            onPressed: () => _intruptExitScreen(),
           ),
         ],
       ),
@@ -77,35 +86,49 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   }
 
   Widget _buildPageContents() {
-    return Expanded(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          FlatButton(
-            color: Colors.blue,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return NewCityFormDialog();
-                },
-              ).then((result) {
-                if (result is City) {
-                  _addCityForActionAdd(result);
-                }
-              });
-            },
-            child: Text(
-              "Open Form",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-              ),
-            ),
-          ),
-        ],
+        children: [],
       ),
+    );
+  }
+
+  Widget _buildAddNewCityButton() {
+    return RaisedButton(
+      color: Colors.white,
+      elevation: 16,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Text(
+          "Add City",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: Colors.black,
+          width: 1,
+        ),
+      ),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return NewCityFormDialog();
+          },
+        ).then((result) {
+          if (result is City) {
+            _addCityForActionAdd(result);
+          }
+        });
+      },
     );
   }
 
