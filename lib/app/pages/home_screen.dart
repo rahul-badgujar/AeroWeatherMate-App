@@ -381,6 +381,21 @@ class _HomeScreenState extends State<HomeScreen> {
     print("Loaded Cities : $citiesToShow");
   }
 
+  void _showSnackbar(String text) {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.white,
+      content: Text(
+        text,
+        style: TextStyle(
+          color: Colors.black87,
+          fontSize: 16,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
+  }
+
   Widget _buildPopupMenuButtons() {
     return PopupMenuButton<consts.HomePagePopupMenuButtons>(
       icon: Icon(
@@ -398,6 +413,13 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text("Credits"),
           ),
         ];
+      },
+      onSelected: (choice) {
+        if (choice == consts.HomePagePopupMenuButtons.manage_cities) {
+          _requestManageCitiesRoute();
+        } else if (choice == consts.HomePagePopupMenuButtons.credits) {
+          _showSnackbar("Credits coming soon...");
+        }
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     );
