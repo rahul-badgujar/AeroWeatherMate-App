@@ -199,6 +199,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   void _showSnackbar(String text) {
     final snackbar = SnackBar(
       backgroundColor: Colors.white,
+      duration: Duration(seconds: 1),
       content: Text(
         text,
         style: TextStyle(

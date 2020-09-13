@@ -364,6 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showSnackbar(String text) {
     final snackbar = SnackBar(
       backgroundColor: Colors.white,
+      duration: Duration(seconds: 1),
       content: Text(
         text,
         style: TextStyle(
