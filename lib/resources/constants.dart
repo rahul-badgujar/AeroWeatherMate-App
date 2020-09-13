@@ -22,6 +22,8 @@ class Numbers {
   static const int maxAllowedCities = 5;
 }
 
+enum HomePagePopupMenuButtons { manage_cities, credits }
+
 String airQualityFromAqi(int aqi) {
   if (0 <= aqi && aqi <= 50)
     return "Good Air";

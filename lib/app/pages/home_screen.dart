@@ -10,7 +10,6 @@ import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/resources/constants.dart' as consts;
 import 'package:air_quality_app/resources/icons_rsc.dart';
-import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -155,10 +154,10 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.menu,
+                  Icons.refresh,
+                  color: Colors.white,
                 ),
-                color: Colors.white,
-                onPressed: () => _requestManageCitiesRoute(),
+                onPressed: () => _doRefreshData(),
               ),
               Expanded(
                 child: Text(
@@ -170,13 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   textAlign: TextAlign.center,
                 ),
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.refresh,
-                  color: Colors.white,
-                ),
-                onPressed: () => _doRefreshData(),
-              ),
+              _buildPopupMenuButtons(),
             ],
           ),
           Container(
@@ -386,5 +379,27 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     print("Loaded Cities : $citiesToShow");
+  }
+
+  Widget _buildPopupMenuButtons() {
+    return PopupMenuButton<consts.HomePagePopupMenuButtons>(
+      icon: Icon(
+        Icons.more_vert,
+        color: Colors.white,
+      ),
+      itemBuilder: (context) {
+        return <PopupMenuEntry<consts.HomePagePopupMenuButtons>>[
+          PopupMenuItem(
+            value: consts.HomePagePopupMenuButtons.manage_cities,
+            child: Text("Manage Cities"),
+          ),
+          PopupMenuItem(
+            value: consts.HomePagePopupMenuButtons.credits,
+            child: Text("Credits"),
+          ),
+        ];
+      },
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    );
   }
 }
