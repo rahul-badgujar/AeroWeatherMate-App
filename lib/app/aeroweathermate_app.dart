@@ -13,11 +13,12 @@ class AeroWeatherMateApp extends StatelessWidget {
       title: Strings.appName,
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      home: ManageCitiesScreen(),
+      home: HomeScreen(),
     );
   }
 }
 
 /// TODO
 ///   Add City Labels in Manage Cities Page
+///   use Set wherever possible changing List
 ///

@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _citiesPagesController.dispose();
+    DatabaseHelper().database.then((db) => db.close());
     super.dispose();
   }
 
@@ -367,31 +368,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _requestManageCitiesRoute() async {
-    final Map<String, Set<City>> result = await Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ManageCitiesScreen())) ??
-        null;
-    if (result != null) {
-      Set<City> toAdd = result[HomeScreen.ADD_CITY_KEY];
-      Set<City> toDelete = result[HomeScreen.DELETE_CITY_KEY];
-      for (City city in toAdd) {
-        await insertCityLocally(city);
-      }
-      for (City city in toDelete) {
-        await deleteCityLocally(city);
-      }
-      await loadCitiesToShow();
-    }
-  }
-
-  Future<void> insertCityLocally(City city) async {
-    DatabaseHelper helper = DatabaseHelper();
-    int row = await helper.insertCity(city);
-    if (row == -1) {
-      print("City already Present in Database");
-    } else {
-      print("city inserted at Row No. : $row");
-    }
-    print("After Inserting City : $citiesToShow");
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => ManageCitiesScreen()));
+    await loadCitiesToShow();
   }
 
   Future<void> loadCitiesToShow() async {
@@ -407,13 +386,5 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     print("Loaded Cities : $citiesToShow");
-  }
-
-  Future<void> deleteCityLocally(City city) async {
-    DatabaseHelper helper = DatabaseHelper();
-    int row = await helper.deleteCity(city);
-    print("City deleted from Row No. : $row");
-    await loadCitiesToShow();
-    print("After Delete City : $citiesToShow");
   }
 }

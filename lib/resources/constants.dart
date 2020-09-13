@@ -19,6 +19,7 @@ class Numbers {
   static const double defaultPollutantConcentration = 20;
   static const int defaultPollutionAqi = 18;
   static const double defaultWeatherIconSize = 30;
+  static const int maxAllowedCities = 5;
 }
 
 String airQualityFromAqi(int aqi) {

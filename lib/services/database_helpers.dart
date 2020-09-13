@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:air_quality_app/resources/constants.dart' as consts;
 
 const String citiesTable = "CitiesTable";
 const String idColumn = "ID";
@@ -59,6 +60,8 @@ class City {
 class DatabaseHelper {
   static const String _databaseName = "CitiesSaved.db";
   static const int _databaseVersion = 1;
+  static const int ERROR_CITY_ALREADY_PRESENT = -23;
+  static const int ERROR_MAX_CITIES_LIMIT_REACHED = -24;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper _instace = DatabaseHelper._privateConstructor();
@@ -97,11 +100,14 @@ class DatabaseHelper {
 
   Future<int> insertCity(City city) async {
     Database db = await database;
-    if (await queryCity(city) == null) {
-      int id = await db.insert(citiesTable, city.toMap());
-      return id;
+    if (await queryCity(city) != null) {
+      return DatabaseHelper.ERROR_CITY_ALREADY_PRESENT;
     }
-    return -1;
+    if (await countCities() >= consts.Numbers.maxAllowedCities) {
+      return DatabaseHelper.ERROR_MAX_CITIES_LIMIT_REACHED;
+    }
+    int id = await db.insert(citiesTable, city.toMap());
+    return id;
   }
 
   Future<City> queryCity(City city) async {
@@ -138,6 +144,12 @@ class DatabaseHelper {
       where: "$cityColumn=? AND $stateColumn=? AND $countryColumn=?",
       whereArgs: [city.city, city.state, city.country],
     );
+  }
+
+  Future<int> countCities() async {
+    Database db = await database;
+    return Sqflite.firstIntValue(
+        await db.rawQuery("SELECT COUNT(*) FROM $citiesTable"));
   }
 
   Future<int> deleteAllCities() async {

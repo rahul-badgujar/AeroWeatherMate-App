@@ -1,6 +1,5 @@
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
-import 'package:air_quality_app/app/pages/home_screen.dart';
 import 'package:air_quality_app/services/database_helpers.dart';
 import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
@@ -14,12 +13,13 @@ class ManageCitiesScreen extends StatefulWidget {
 }
 
 class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
-  Map<String, Set<City>> actionMap = {};
+  List<City> citiesBeingShown = [];
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
-    actionMap[HomeScreen.ADD_CITY_KEY] = Set();
-    actionMap[HomeScreen.DELETE_CITY_KEY] = Set();
+    loadCitiesToShow();
+    getTotalCitiesSavedLocally();
     print("Whole Screen Rebuilded!");
     super.initState();
   }
@@ -27,6 +27,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: Stack(
         children: [
           Container(
@@ -46,13 +47,31 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
               ),
             ),
           ),
-          Positioned(
-            bottom: 24,
-            left: 120,
-            right: 120,
-            child: _buildAddNewCityButton(),
-          )
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.white,
+        icon: Icon(
+          Icons.add,
+          color: Colors.black,
+          size: 35,
+        ),
+        label: Text(
+          "Add New City",
+          style: TextStyle(color: Colors.black, fontSize: 16),
+        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return NewCityFormDialog();
+            },
+          ).then((result) {
+            if (result is City) {
+              insertCityLocally(result);
+            }
+          });
+        },
       ),
     );
   }
@@ -67,7 +86,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
               Icons.arrow_back,
               color: Colors.white,
             ),
-            onPressed: () => _intruptExitScreen(),
+            onPressed: () => _onExitScreen(),
           ),
           Expanded(
             child: Text(
@@ -91,59 +110,104 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [],
-      ),
-    );
-  }
-
-  Widget _buildAddNewCityButton() {
-    return RaisedButton(
-      color: Colors.white,
-      elevation: 16,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Text(
-          "Add City",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                return _buildCityLabelWidget(citiesBeingShown[index]);
+              },
+              itemCount: citiesBeingShown.length,
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            ),
           ),
-        ),
+        ],
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: Colors.black,
-          width: 1,
-        ),
-      ),
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return NewCityFormDialog();
-          },
-        ).then((result) {
-          if (result is City) {
-            _addCityForActionAdd(result);
-          }
-        });
-      },
     );
   }
 
-  void _addCityForActionAdd(City city) {
-    actionMap[HomeScreen.ADD_CITY_KEY].add(city);
-    print("added City : $city");
-    setState(() {});
+  Widget _buildCityLabelWidget(City city) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      margin: EdgeInsets.symmetric(horizontal: 32, vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              city.city ?? "",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.delete_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+            onPressed: null,
+            padding: EdgeInsets.zero,
+          ),
+        ],
+      ),
+      decoration: AppDecorations.blurRoundBox(),
+    );
   }
 
-  void _successExitScreen() {
-    Navigator.pop(context, actionMap);
+  void _onExitScreen() {
+    Navigator.pop(context);
   }
 
-  void _intruptExitScreen() {
-    Navigator.pop(context, actionMap);
+  Future<void> insertCityLocally(City city) async {
+    DatabaseHelper helper = DatabaseHelper();
+    int row = await helper.insertCity(city);
+    if (row == DatabaseHelper.ERROR_CITY_ALREADY_PRESENT) {
+      _showSnackbar("City already Present");
+    } else if (row == DatabaseHelper.ERROR_MAX_CITIES_LIMIT_REACHED) {
+      _showSnackbar("Max 5 Cities can be saved");
+    }
+    await loadCitiesToShow();
+  }
+
+  Future<void> loadCitiesToShow() async {
+    DatabaseHelper helper = DatabaseHelper();
+    List<City> loadedCities = await helper.queryAllCities() ?? [];
+    setState(() {
+      citiesBeingShown = loadedCities;
+    });
+  }
+
+  Future<void> deleteCityLocally(City city) async {
+    DatabaseHelper helper = DatabaseHelper();
+    int row = await helper.deleteCity(city);
+    print("City deleted from Row No. : $row");
+    await loadCitiesToShow();
+  }
+
+  Future<int> getTotalCitiesSavedLocally() async {
+    DatabaseHelper helper = DatabaseHelper();
+    int count = await helper.countCities();
+    print("Total Cities : $count");
+    return count;
+  }
+
+  void _showSnackbar(String text) {
+    final snackbar = SnackBar(
+      backgroundColor: Colors.white,
+      content: Text(
+        text,
+        style: TextStyle(
+          color: Colors.black87,
+          fontSize: 16,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+    _scaffoldKey.currentState.showSnackBar(snackbar);
   }
 }
 
@@ -174,19 +238,24 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      title: Text(
+        "City Details",
+        style: TextStyle(color: Colors.black),
+        textAlign: TextAlign.center,
+      ),
       content: _buildFormContents(),
     );
   }
 
   Widget _buildFormContents() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildUserLocationRequestButton(),
         _buildCountriesSelectionDropdown(),
         _buildStateSelectionDropdown(),
         _buildCitySelectionDropdown(),
+        _buildUserLocationRequestButton(),
         _buildAddCityDataButton(),
       ],
     );
