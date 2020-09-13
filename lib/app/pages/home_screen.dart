@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:air_quality_app/api/data_models/data.dart';
 import 'package:air_quality_app/api/data_models/pollution.dart';
 import 'package:air_quality_app/api/data_models/weather.dart';
+import 'package:air_quality_app/app/pages/credits_screen.dart';
 import 'package:air_quality_app/app/pages/manage_cities_screen.dart';
 import 'package:air_quality_app/services/database_helpers.dart';
 import 'package:air_quality_app/widgets/main_page_widgets.dart'
@@ -346,6 +347,11 @@ class _HomeScreenState extends State<HomeScreen> {
     await loadCitiesToShow();
   }
 
+  Future<void> _requestCreditsRoute() async {
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => CreditsScreen()));
+  }
+
   Future<void> loadCitiesToShow() async {
     DatabaseHelper helper = DatabaseHelper();
     List<City> loadedCities = await helper.queryAllCities() ?? [];
@@ -413,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (choice == consts.HomePagePopupMenuButtons.manage_cities) {
           _requestManageCitiesRoute();
         } else if (choice == consts.HomePagePopupMenuButtons.credits) {
-          _showSnackbar("Credits coming soon...");
+          _requestCreditsRoute();
         }
       },
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
