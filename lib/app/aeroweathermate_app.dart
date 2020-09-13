@@ -1,5 +1,4 @@
 import 'package:air_quality_app/app/pages/home_screen.dart';
-import 'package:air_quality_app/app/pages/manage_cities_screen.dart';
 import 'package:air_quality_app/ui/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/resources/constants.dart' show Strings;
@@ -19,6 +18,6 @@ class AeroWeatherMateApp extends StatelessWidget {
 }
 
 /// TODO
-///   Add City Labels in Manage Cities Page
+///   add action for city deletes in ManageCities Screen
 ///   use Set wherever possible changing List
 ///

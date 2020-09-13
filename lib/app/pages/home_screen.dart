@@ -406,11 +406,25 @@ class _HomeScreenState extends State<HomeScreen> {
         return <PopupMenuEntry<consts.HomePagePopupMenuButtons>>[
           PopupMenuItem(
             value: consts.HomePagePopupMenuButtons.manage_cities,
-            child: Text("Manage Cities"),
+            child: Text(
+              "Manage Cities",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
           PopupMenuItem(
             value: consts.HomePagePopupMenuButtons.credits,
-            child: Text("Credits"),
+            child: Text(
+              "Credits",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ];
       },

@@ -57,7 +57,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
           size: 35,
         ),
         label: Text(
-          "Add New City",
+          "New City",
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
         onPressed: () {
@@ -114,7 +114,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
           Expanded(
             child: ListView.builder(
               itemBuilder: (context, index) {
-                return _buildCityLabelWidget(citiesBeingShown[index]);
+                return _buildCityLabelWidget(index);
               },
               itemCount: citiesBeingShown.length,
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -125,7 +125,8 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
     );
   }
 
-  Widget _buildCityLabelWidget(City city) {
+  Widget _buildCityLabelWidget(int index) {
+    City city = citiesBeingShown[index];
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       margin: EdgeInsets.symmetric(horizontal: 32, vertical: 4),
@@ -149,7 +150,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
               color: Colors.white,
               size: 24,
             ),
-            onPressed: null,
+            onPressed: () => _onDeleteButtonForCityLabelClicked(city),
             padding: EdgeInsets.zero,
           ),
         ],
@@ -208,6 +209,10 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
       ),
     );
     _scaffoldKey.currentState.showSnackBar(snackbar);
+  }
+
+  Future<void> _onDeleteButtonForCityLabelClicked(City city) async {
+    await deleteCityLocally(city);
   }
 }
 
