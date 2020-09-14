@@ -87,7 +87,8 @@ class HttpClient {
               ?.toList();
           List<String> countriesStringList = list.cast<String>().toList();
           List<Country> countriesList = countriesStringList
-              ?.map((e) => e == null ? null : Country.fromString(e));
+              ?.map((e) => e == null ? null : Country(country: e))
+              .toList();
           return countriesList;
         }
       } else {
@@ -117,7 +118,8 @@ class HttpClient {
               ?.toList();
           List<String> statesStringList = list.cast<String>().toList();
           List<State> statesList = statesStringList
-              ?.map((e) => e == null ? null : State.fromString("$e&$country"));
+              ?.map((e) => e == null ? null : State(state: e, country: country))
+              .toList();
           return statesList;
         }
       } else {
@@ -148,8 +150,11 @@ class HttpClient {
               ?.map((e) => e == null ? null : e["city"])
               ?.toList();
           List<String> citiesStringList = list.cast<String>().toList();
-          List<City> citiesList = citiesStringList?.map(
-              (e) => e == null ? null : City.fromString("$e&$state&$country"));
+          List<City> citiesList = citiesStringList
+              ?.map((e) => e == null
+                  ? null
+                  : City(city: e, state: state, country: country))
+              .toList();
           return citiesList;
         }
       } else {

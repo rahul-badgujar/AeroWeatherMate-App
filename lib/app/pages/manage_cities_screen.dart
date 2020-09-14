@@ -304,19 +304,7 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
         label: "Select State",
         showSearchBox: true,
         selectedItem: stateSelected ?? "",
-        onChanged: (String value) {
-          stateSelected = value;
-          HttpClient()
-              .fetchListOfCitiesInState(
-                  state: stateSelected, country: countrySelected)
-              .then((fetchedCities) {
-            setState(() {
-              citiesList = fetchedCities ?? <String>[];
-              citySelected = "";
-              isAddCityButtonActive = false;
-            });
-          });
-        },
+        onChanged: (String value) => loadUserLoadedCities(value),
       ),
     );
   }

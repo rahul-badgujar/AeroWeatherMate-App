@@ -203,7 +203,7 @@ class DatabaseHelper {
     Database db = await database;
     Batch batch = db.batch();
     for (City city in cities) {
-      batch.insert(userLoadedStatesTable, city.toMap());
+      batch.insert(userLoadedCitiesTable, city.toMap());
     }
     await batch.commit();
     print("User Loaded Cities saved");
