@@ -374,12 +374,8 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
     countrySelected = airVisualData.data.country;
     stateSelected = airVisualData.data.state;
     citySelected = airVisualData.data.city;
-    /* statesList = await HttpClient()
-                .fetchListOfStatesFromCountry(country: countrySelected);
-            citiesList = await HttpClient().fetchListOfCitiesInState(
-              state: stateSelected,
-              country: countrySelected,
-            ); */
+    loadUserLoadedStates(countrySelected);
+    loadUserLoadedCities(stateSelected);
     setState(() {
       isAddCityButtonActive = true;
     });
