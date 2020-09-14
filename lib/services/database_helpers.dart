@@ -216,10 +216,10 @@ class DatabaseHelper {
     if (found.length > 0) {
       List<Country> countriesLoaded =
           found?.map((e) => e == null ? null : Country.fromMap(e))?.toList();
-      print("User Loaded Countries Retrieved  : $countriesLoaded");
+      //print("User Loaded Countries Retrieved  : $countriesLoaded");
       return countriesLoaded;
     }
-    print("No User Loaded Countries Retrieved");
+    //print("No User Loaded Countries Retrieved");
     return null;
   }
 
@@ -234,10 +234,10 @@ class DatabaseHelper {
     if (found.length > 0) {
       List<State> statesLoaded =
           found?.map((e) => e == null ? null : State.fromMap(e))?.toList();
-      print("User Loaded States Retrieved  : $statesLoaded");
+      //print("User Loaded States Retrieved  : $statesLoaded");
       return statesLoaded;
     }
-    print("No User Loaded States Retrieved");
+    //print("No User Loaded States Retrieved");
     return null;
   }
 
@@ -252,10 +252,10 @@ class DatabaseHelper {
     if (found.length > 0) {
       List<City> citiesLoaded =
           found?.map((e) => e == null ? null : City.fromMap(e))?.toList();
-      print("User Loaded Cities Retrieved  : $citiesLoaded");
+      //print("User Loaded Cities Retrieved  : $citiesLoaded");
       return citiesLoaded;
     }
-    print("No User Loaded Cities Retrieved");
+    //print("No User Loaded Cities Retrieved");
     return null;
   }
 

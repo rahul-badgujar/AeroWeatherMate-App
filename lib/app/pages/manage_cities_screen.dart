@@ -250,16 +250,18 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
   }
 
   Widget _buildFormContents() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _buildCountriesSelectionDropdown(),
-        _buildStateSelectionDropdown(),
-        _buildCitySelectionDropdown(),
-        _buildUserLocationRequestButton(),
-        _buildAddCityDataButton(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildCountriesSelectionDropdown(),
+          _buildStateSelectionDropdown(),
+          _buildCitySelectionDropdown(),
+          _buildUserLocationRequestButton(),
+          _buildAddCityDataButton(),
+        ],
+      ),
     );
   }
 
@@ -395,7 +397,7 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
       countriesList =
           fetchedCountries?.map((e) => e == null ? null : e.country).toList();
     });
-    print("Loaded Countries for Dropdown : $countriesList");
+    //print("Loaded Countries for Dropdown : $countriesList");
   }
 
   Future<void> loadUserLoadedStates(String value) async {
