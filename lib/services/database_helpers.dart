@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:air_quality_app/resources/constants.dart' as consts;
 
 const String citiesTable = "CitiesTable";
+const String userLoadedCitiesTable = "UserLoadedCitiesTable";
 const String idColumn = "ID";
 const String cityColumn = "City";
 const String stateColumn = "State";
@@ -19,9 +21,9 @@ class City {
 
   City({
     this.id,
-    this.city,
-    this.state,
-    this.country,
+    @required this.city,
+    @required this.state,
+    @required this.country,
   });
 
   factory City.fromString(String str) {
@@ -42,9 +44,9 @@ class City {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = <String, dynamic>{
-      cityColumn: city,
-      stateColumn: state,
-      countryColumn: country,
+      cityColumn: this.city,
+      stateColumn: this.state,
+      countryColumn: this.country,
     };
     if (id != null) {
       map[idColumn] = id;
@@ -54,12 +56,55 @@ class City {
 
   @override
   String toString() {
-    return "$city&$state&$country";
+    return "${this.city}&${this.state}&${this.country}";
+  }
+}
+
+class Country {
+  final String country;
+  Country({@required this.country});
+
+  factory Country.fromMap(Map<String, dynamic> map) {
+    return Country(country: map[countryColumn]);
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      countryColumn: this.country,
+    };
+  }
+
+  @override
+  String toString() {
+    return this.country;
+  }
+}
+
+class State {
+  final String state;
+  final String country;
+
+  State({@required this.state, @required this.country});
+
+  factory State.fromMap(Map<String, dynamic> map) {
+    return State(state: map[stateColumn], country: map[countryColumn]);
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      stateColumn: this.state,
+      countryColumn: this.country,
+    };
+  }
+
+  @override
+  String toString() {
+    return "${this.state}&${this.country}";
   }
 }
 
 class DatabaseHelper {
-  static const String _databaseName = "CitiesSaved.db";
+  static const String _databaseName = "ApiSavedData.db";
   static const int _databaseVersion = 1;
   static const int ERROR_CITY_ALREADY_PRESENT = -23;
   static const int ERROR_MAX_CITIES_LIMIT_REACHED = -24;
@@ -89,8 +134,16 @@ class DatabaseHelper {
   }
 
   FutureOr<void> _onCreate(Database db, int version) async {
-    return db.execute('''
+    db.execute('''
       CREATE TABLE $citiesTable (
+        $idColumn int PRIMARY KEY,
+        $cityColumn varchar(255) NOT NULL,
+        $stateColumn varchar(255) NOT NULL,
+        $countryColumn varchar(255) NOT NULL
+      )
+      ''');
+    db.execute('''
+      CREATE TABLE $userLoadedCitiesTable (
         $idColumn int PRIMARY KEY,
         $cityColumn varchar(255) NOT NULL,
         $stateColumn varchar(255) NOT NULL,

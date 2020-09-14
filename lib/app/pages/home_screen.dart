@@ -4,7 +4,7 @@ import 'package:air_quality_app/api/data_models/pollution.dart';
 import 'package:air_quality_app/api/data_models/weather.dart';
 import 'package:air_quality_app/app/pages/credits_screen.dart';
 import 'package:air_quality_app/app/pages/manage_cities_screen.dart';
-import 'package:air_quality_app/services/database_helpers.dart';
+import 'package:air_quality_app/services/database_helpers.dart' as dbhelper;
 import 'package:air_quality_app/widgets/main_page_widgets.dart'
     as mainpage_widgets;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   LocationData currentLiveLocation;
   Future<AirVisualData> currentAirVisualData;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  List<City> citiesToShow = [];
+  List<dbhelper.City> citiesToShow = [];
   List<FutureBuilder<AirVisualData>> _citiesPages = [];
   final PageController _citiesPagesController = PageController();
   int currentPage = 0;
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _citiesPagesController.dispose();
-    DatabaseHelper().database.then((db) => db.close());
+    dbhelper.DatabaseHelper().database.then((db) => db.close());
     super.dispose();
   }
 
@@ -353,12 +353,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadCitiesToShow() async {
-    DatabaseHelper helper = DatabaseHelper();
-    List<City> loadedCities = await helper.queryAllCities() ?? [];
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
+    List<dbhelper.City> loadedCities = await helper.queryAllCities() ?? [];
     setState(() {
       citiesToShow = loadedCities;
       _citiesPages = [];
-      for (City city in citiesToShow) {
+      for (dbhelper.City city in citiesToShow) {
         Future<AirVisualData> fetchedData =
             HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
         _citiesPages.add(_buildDataShowUI(fetchedData));

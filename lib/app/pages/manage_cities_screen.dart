@@ -1,6 +1,6 @@
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
-import 'package:air_quality_app/services/database_helpers.dart';
+import 'package:air_quality_app/services/database_helpers.dart' as dbhelper;
 import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ class ManageCitiesScreen extends StatefulWidget {
 }
 
 class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
-  List<City> citiesBeingShown = [];
+  List<dbhelper.City> citiesBeingShown = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -67,7 +67,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
               return NewCityFormDialog();
             },
           ).then((result) {
-            if (result is City) {
+            if (result is dbhelper.City) {
               insertCityLocally(result);
             }
           });
@@ -126,7 +126,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   }
 
   Widget _buildCityLabelWidget(int index) {
-    City city = citiesBeingShown[index];
+    dbhelper.City city = citiesBeingShown[index];
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       margin: EdgeInsets.symmetric(horizontal: 32, vertical: 4),
@@ -163,34 +163,34 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
     Navigator.pop(context);
   }
 
-  Future<void> insertCityLocally(City city) async {
-    DatabaseHelper helper = DatabaseHelper();
+  Future<void> insertCityLocally(dbhelper.City city) async {
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
     int row = await helper.insertCity(city);
-    if (row == DatabaseHelper.ERROR_CITY_ALREADY_PRESENT) {
+    if (row == dbhelper.DatabaseHelper.ERROR_CITY_ALREADY_PRESENT) {
       _showSnackbar("City already Present");
-    } else if (row == DatabaseHelper.ERROR_MAX_CITIES_LIMIT_REACHED) {
+    } else if (row == dbhelper.DatabaseHelper.ERROR_MAX_CITIES_LIMIT_REACHED) {
       _showSnackbar("Max 5 Cities can be saved");
     }
     await loadCitiesToShow();
   }
 
   Future<void> loadCitiesToShow() async {
-    DatabaseHelper helper = DatabaseHelper();
-    List<City> loadedCities = await helper.queryAllCities() ?? [];
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
+    List<dbhelper.City> loadedCities = await helper.queryAllCities() ?? [];
     setState(() {
       citiesBeingShown = loadedCities;
     });
   }
 
-  Future<void> deleteCityLocally(City city) async {
-    DatabaseHelper helper = DatabaseHelper();
+  Future<void> deleteCityLocally(dbhelper.City city) async {
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
     int row = await helper.deleteCity(city);
     print("City deleted from Row No. : $row");
     await loadCitiesToShow();
   }
 
   Future<int> getTotalCitiesSavedLocally() async {
-    DatabaseHelper helper = DatabaseHelper();
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
     int count = await helper.countCities();
     print("Total Cities : $count");
     return count;
@@ -212,7 +212,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
     _scaffoldKey.currentState.showSnackBar(snackbar);
   }
 
-  Future<void> _onDeleteButtonForCityLabelClicked(City city) async {
+  Future<void> _onDeleteButtonForCityLabelClicked(dbhelper.City city) async {
     await deleteCityLocally(city);
   }
 }
@@ -385,7 +385,7 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
             : () {
                 Navigator.pop(
                     context,
-                    City(
+                    dbhelper.City(
                         city: citySelected,
                         state: stateSelected,
                         country: countrySelected));
