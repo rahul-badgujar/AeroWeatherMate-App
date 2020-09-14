@@ -75,6 +75,10 @@ class Country {
   String toString() {
     return this.country;
   }
+
+  factory Country.fromString(String representation) {
+    return Country(country: representation);
+  }
 }
 
 class State {
@@ -97,6 +101,11 @@ class State {
   @override
   String toString() {
     return "${this.state}&${this.country}";
+  }
+
+  factory State.fromString(String representation) {
+    List<String> slices = representation.split("&");
+    return State(state: slices[0], country: slices[1]);
   }
 }
 

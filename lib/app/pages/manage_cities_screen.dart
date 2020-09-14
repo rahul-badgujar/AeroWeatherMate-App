@@ -233,11 +233,7 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
 
   @override
   void initState() {
-    HttpClient().fetchListOfCountries().then((fetchedCountries) {
-      setState(() {
-        countriesList = fetchedCountries ?? <String>[];
-      });
-    });
+    loadUserLoadedCountries();
     super.initState();
   }
 
@@ -293,20 +289,7 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
         selectedItem: countrySelected ?? "",
         label: "Select Country",
         showSearchBox: true,
-        onChanged: (String value) {
-          countrySelected = value;
-          HttpClient()
-              .fetchListOfStatesFromCountry(country: countrySelected)
-              .then((fetchedStates) {
-            setState(() {
-              statesList = fetchedStates ?? <String>[];
-              stateSelected = "";
-              citiesList = <String>[];
-              citySelected = "";
-              isAddCityButtonActive = false;
-            });
-          });
-        },
+        onChanged: (String value) => loadUserLoadedStates(value),
       ),
     );
   }
@@ -401,14 +384,62 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
     countrySelected = airVisualData.data.country;
     stateSelected = airVisualData.data.state;
     citySelected = airVisualData.data.city;
-    statesList = await HttpClient()
-        .fetchListOfStatesFromCountry(country: countrySelected);
-    citiesList = await HttpClient().fetchListOfCitiesInState(
-      state: stateSelected,
-      country: countrySelected,
-    );
+    /* statesList = await HttpClient()
+                .fetchListOfStatesFromCountry(country: countrySelected);
+            citiesList = await HttpClient().fetchListOfCitiesInState(
+              state: stateSelected,
+              country: countrySelected,
+            ); */
     setState(() {
       isAddCityButtonActive = true;
+    });
+  }
+
+  Future<void> loadUserLoadedCountries() async {
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
+    List<dbhelper.Country> fetchedCountries =
+        await helper.retrieveUserLoadedCountries();
+    if (fetchedCountries == null) {
+      fetchedCountries = await HttpClient().fetchListOfCountries();
+      await helper.saveUserLoadedCountries(fetchedCountries);
+    }
+    setState(() {
+      countriesList =
+          fetchedCountries?.map((e) => e == null ? null : e.country).toList();
+    });
+    print("Loaded Countries for Dropdown : $countriesList");
+  }
+
+  Future<void> loadUserLoadedStates(String value) async {
+    countrySelected = value;
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
+    List<dbhelper.State> fetchedStatesList = await helper
+        .retrieveUserLoadedStates(dbhelper.Country(country: countrySelected));
+    if (fetchedStatesList == null) {
+      fetchedStatesList = await HttpClient()
+          .fetchListOfStatesFromCountry(country: countrySelected);
+      await helper.saveUserLoadedStates(fetchedStatesList);
+    }
+    setState(() {
+      statesList =
+          fetchedStatesList?.map((e) => e == null ? null : e.state)?.toList();
+    });
+  }
+
+  Future<void> loadUserLoadedCities(String value) async {
+    stateSelected = value;
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
+    List<dbhelper.City> fetchedCitiesList =
+        await helper.retrieveUserLoadedCities(
+            dbhelper.State(state: stateSelected, country: countrySelected));
+    if (fetchedCitiesList == null) {
+      fetchedCitiesList = await HttpClient().fetchListOfCitiesInState(
+          state: stateSelected, country: countrySelected);
+      await helper.saveUserLoadedCities(fetchedCitiesList);
+    }
+    setState(() {
+      citiesList =
+          fetchedCitiesList?.map((e) => e == null ? null : e.city)?.toList();
     });
   }
 }

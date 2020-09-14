@@ -71,7 +71,7 @@ class HttpClient {
     return null;
   }
 
-  Future<List<String>> fetchListOfCountries() async {
+  Future<List<Country>> fetchListOfCountries() async {
     String apiRequestUrl = url.countriesListUrl();
     try {
       final http.Response response = await http.get(apiRequestUrl);
@@ -85,8 +85,9 @@ class HttpClient {
           List<dynamic> list = (jsonData["data"] as List)
               ?.map((e) => e == null ? null : e["country"])
               ?.toList();
-          List<String> countriesList = list.cast<String>().toList();
-          //print(countriesList);
+          List<String> countriesStringList = list.cast<String>().toList();
+          List<Country> countriesList = countriesStringList
+              ?.map((e) => e == null ? null : Country.fromString(e));
           return countriesList;
         }
       } else {
@@ -100,7 +101,7 @@ class HttpClient {
     return null;
   }
 
-  Future<List<String>> fetchListOfStatesFromCountry({String country}) async {
+  Future<List<State>> fetchListOfStatesFromCountry({String country}) async {
     String apiRequestUrl = url.statesListInCountryUrl(country: country);
     try {
       final http.Response response = await http.get(apiRequestUrl);
@@ -114,8 +115,9 @@ class HttpClient {
           List<dynamic> list = (jsonData["data"] as List)
               ?.map((e) => e == null ? null : e["state"])
               ?.toList();
-          List<String> statesList = list.cast<String>().toList();
-          //print(statesList);
+          List<String> statesStringList = list.cast<String>().toList();
+          List<State> statesList = statesStringList
+              ?.map((e) => e == null ? null : State.fromString("$e&$country"));
           return statesList;
         }
       } else {
@@ -129,7 +131,7 @@ class HttpClient {
     return null;
   }
 
-  Future<List<String>> fetchListOfCitiesInState(
+  Future<List<City>> fetchListOfCitiesInState(
       {String state, String country}) async {
     String apiRequestUrl =
         url.citiesListInStateUrl(state: state, country: country);
@@ -145,8 +147,9 @@ class HttpClient {
           List<dynamic> list = (jsonData["data"] as List)
               ?.map((e) => e == null ? null : e["city"])
               ?.toList();
-          List<String> citiesList = list.cast<String>().toList();
-          //print(citiesList);
+          List<String> citiesStringList = list.cast<String>().toList();
+          List<City> citiesList = citiesStringList?.map(
+              (e) => e == null ? null : City.fromString("$e&$state&$country"));
           return citiesList;
         }
       } else {
