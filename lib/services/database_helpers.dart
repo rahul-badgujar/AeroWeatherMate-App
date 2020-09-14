@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -8,19 +9,18 @@ import 'package:air_quality_app/resources/constants.dart' as consts;
 
 const String citiesTable = "CitiesTable";
 const String userLoadedCitiesTable = "UserLoadedCitiesTable";
-const String idColumn = "ID";
+const String userLoadedStatesTable = "UserLoadedStatesTable";
+const String userLoadedCountriesTable = "UserLoadedCountriesTable";
 const String cityColumn = "City";
 const String stateColumn = "State";
 const String countryColumn = "Country";
 
 class City {
-  int id;
   final String city;
   final String state;
   final String country;
 
   City({
-    this.id,
     @required this.city,
     @required this.state,
     @required this.country,
@@ -34,7 +34,6 @@ class City {
 
   factory City.fromMap(Map<String, dynamic> map) {
     City city = City(
-      id: map[idColumn],
       city: map[cityColumn],
       state: map[stateColumn],
       country: map[countryColumn],
@@ -48,9 +47,7 @@ class City {
       stateColumn: this.state,
       countryColumn: this.country,
     };
-    if (id != null) {
-      map[idColumn] = id;
-    }
+
     return map;
   }
 
@@ -136,18 +133,27 @@ class DatabaseHelper {
   FutureOr<void> _onCreate(Database db, int version) async {
     db.execute('''
       CREATE TABLE $citiesTable (
-        $idColumn int PRIMARY KEY,
-        $cityColumn varchar(255) NOT NULL,
+        $cityColumn varchar(255) PRIMARY KEY,
         $stateColumn varchar(255) NOT NULL,
         $countryColumn varchar(255) NOT NULL
       )
       ''');
     db.execute('''
       CREATE TABLE $userLoadedCitiesTable (
-        $idColumn int PRIMARY KEY,
-        $cityColumn varchar(255) NOT NULL,
+        $cityColumn varchar(255) PRIMARY KEY,
         $stateColumn varchar(255) NOT NULL,
         $countryColumn varchar(255) NOT NULL
+      )
+      ''');
+    db.execute('''
+      CREATE TABLE $userLoadedStatesTable (
+        $stateColumn varchar(255) PRIMARY KEY,
+        $countryColumn varchar(255) NOT NULL
+      )
+      ''');
+    db.execute('''
+      CREATE TABLE $userLoadedCountriesTable (
+        $countryColumn varchar(255) PRIMARY KEY
       )
       ''');
   }
@@ -162,6 +168,86 @@ class DatabaseHelper {
     }
     int id = await db.insert(citiesTable, city.toMap());
     return id;
+  }
+
+  Future<void> saveUserLoadedCountries(List<Country> countries) async {
+    Database db = await database;
+    Batch batch = db.batch();
+    for (Country country in countries) {
+      batch.insert(userLoadedCountriesTable, country.toMap());
+    }
+    await batch.commit(noResult: true);
+    print("User Loaded Countries saved");
+  }
+
+  Future<void> saveUserLoadedStates(List<State> states) async {
+    Database db = await database;
+    Batch batch = db.batch();
+    for (State state in states) {
+      batch.insert(userLoadedStatesTable, state.toMap());
+    }
+    await batch.commit();
+    print("User Loaded States saved");
+  }
+
+  Future<void> saveUserLoadedCities(List<City> cities) async {
+    Database db = await database;
+    Batch batch = db.batch();
+    for (City city in cities) {
+      batch.insert(userLoadedStatesTable, city.toMap());
+    }
+    await batch.commit();
+    print("User Loaded Cities saved");
+  }
+
+  Future<List<Country>> retrieveUserLoadedCountries() async {
+    Database db = await database;
+    List<Map> found =
+        await db.query(userLoadedCountriesTable) ?? <String, dynamic>{};
+    if (found.length > 0) {
+      List<Country> countriesLoaded =
+          found?.map((e) => e == null ? null : Country.fromMap(e))?.toList();
+      print("User Loaded Countries Retrieved  : $countriesLoaded");
+      return countriesLoaded;
+    }
+    print("No User Loaded Countries Retrieved");
+    return null;
+  }
+
+  Future<List<State>> retrieveUserLoadedStates(Country whereCountry) async {
+    Database db = await database;
+    List<Map> found = await db.query(
+          userLoadedStatesTable,
+          where: "$countryColumn=?",
+          whereArgs: [whereCountry.country],
+        ) ??
+        <String, dynamic>{};
+    if (found.length > 0) {
+      List<State> statesLoaded =
+          found?.map((e) => e == null ? null : State.fromMap(e))?.toList();
+      print("User Loaded States Retrieved  : $statesLoaded");
+      return statesLoaded;
+    }
+    print("No User Loaded States Retrieved");
+    return null;
+  }
+
+  Future<List<City>> retrieveUserLoadedCities(State whereState) async {
+    Database db = await database;
+    List<Map> found = await db.query(
+          userLoadedCitiesTable,
+          where: "$stateColumn=? AND $countryColumn=?",
+          whereArgs: [whereState.state, whereState.country],
+        ) ??
+        <String, dynamic>{};
+    if (found.length > 0) {
+      List<City> citiesLoaded =
+          found?.map((e) => e == null ? null : City.fromMap(e))?.toList();
+      print("User Loaded Cities Retrieved  : $citiesLoaded");
+      return citiesLoaded;
+    }
+    print("No User Loaded Cities Retrieved");
+    return null;
   }
 
   Future<City> queryCity(City city) async {
