@@ -115,11 +115,13 @@ class _HomeScreenState extends State<HomeScreen> {
       future: dataFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Column(
-            children: [
-              _buildCityDetailTitle(snapshot),
-              _buildCurrentDataWidget(snapshot),
-            ],
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildCityDetailTitle(snapshot),
+                _buildCurrentDataWidget(snapshot),
+              ],
+            ),
           );
         } else {
           return Center(
