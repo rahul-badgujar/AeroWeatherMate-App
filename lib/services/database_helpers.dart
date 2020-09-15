@@ -55,6 +55,16 @@ class City {
   String toString() {
     return "${this.city}&${this.state}&${this.country}";
   }
+
+  @override
+  bool operator ==(other) {
+    if (other is City) {
+      return (this.city == other.city &&
+          this.state == other.state &&
+          this.country == other.country);
+    }
+    return false;
+  }
 }
 
 class Country {

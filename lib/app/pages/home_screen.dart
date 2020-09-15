@@ -32,8 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<AirVisualData> currentAirVisualData;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<dbhelper.City> citiesToShow = [];
-  List<FutureBuilder<AirVisualData>> _citiesPages = [];
-  final PageController _citiesPagesController = PageController();
+  List<Future<AirVisualData>> _citiesFutureData = <Future<AirVisualData>>[];
+  final PageController _citiesPagesController = PageController(keepPage: true);
   int currentPage = 0;
 
   @override
@@ -87,11 +87,21 @@ class _HomeScreenState extends State<HomeScreen> {
           if (citiesToShow == null || citiesToShow.length == 0) {
             return _buildNoCityToShowScreen();
           } else {
-            return PageView(
-              children: _citiesPages,
+            return PageView.builder(
               controller: _citiesPagesController,
-              onPageChanged: (int page) {
-                currentPage = page;
+              itemBuilder: (context, index) {
+                if (index < _citiesFutureData.length) {
+                  return _buildDataShowUI(_citiesFutureData[index]);
+                } else {
+                  print("The index is out of bound for page viewer caugth");
+                  return Container();
+                }
+              },
+              itemCount:
+                  _citiesFutureData == null ? 0 : _citiesFutureData.length,
+              onPageChanged: (index) {
+                currentPage = index;
+                print("Cities Page Changed to $currentPage");
               },
             );
           }
@@ -164,7 +174,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else {
                   return SmoothPageIndicator(
                     controller: _citiesPagesController,
-                    count: _citiesPages.length,
+                    count: _citiesFutureData == null
+                        ? 0
+                        : _citiesFutureData.length,
                     effect: WormEffect(
                       activeDotColor: Colors.white,
                       dotColor: Colors.white70,
@@ -206,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Future<AirVisualData> refreshedData = HttpClient()
         .fetchcurrentAirVisualDataUsingAreaDetails(citiesToShow[currentPage]);
     setState(() {
-      _citiesPages[currentPage] = _buildDataShowUI(refreshedData);
+      _citiesFutureData[currentPage] = refreshedData;
     });
     print("Current Page Refreshed");
   }
@@ -344,7 +356,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _requestManageCitiesRoute() async {
     await Navigator.push(
         context, MaterialPageRoute(builder: (context) => ManageCitiesScreen()));
-    await loadCitiesToShow();
+    dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
+    List<dbhelper.City> loadedCities = await helper.queryAllCities() ?? [];
+    setState(() {
+      for (int i = 0; i < citiesToShow.length; i++) {
+        if (loadedCities.contains(citiesToShow[i]) == false) {
+          _citiesFutureData.removeAt(i);
+        }
+      }
+      for (dbhelper.City city in loadedCities) {
+        if (citiesToShow.contains(city) == false) {
+          Future<AirVisualData> fetchedData =
+              HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
+          _citiesFutureData.add(fetchedData);
+        }
+      }
+      citiesToShow = loadedCities;
+    });
+
+    print("Updated Cities after Managing Cities  : $citiesToShow");
   }
 
   Future<void> _requestCreditsRoute() async {
@@ -355,14 +385,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> loadCitiesToShow() async {
     dbhelper.DatabaseHelper helper = dbhelper.DatabaseHelper();
     List<dbhelper.City> loadedCities = await helper.queryAllCities() ?? [];
+    _citiesFutureData = [];
+    for (dbhelper.City city in loadedCities) {
+      Future<AirVisualData> fetchedData =
+          HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
+      _citiesFutureData.add(fetchedData);
+    }
     setState(() {
       citiesToShow = loadedCities;
-      _citiesPages = [];
-      for (dbhelper.City city in citiesToShow) {
-        Future<AirVisualData> fetchedData =
-            HttpClient().fetchcurrentAirVisualDataUsingAreaDetails(city);
-        _citiesPages.add(_buildDataShowUI(fetchedData));
-      }
     });
     print("Loaded Cities : $citiesToShow");
   }
