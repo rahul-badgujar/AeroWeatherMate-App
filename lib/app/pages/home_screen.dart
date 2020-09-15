@@ -168,15 +168,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Builder(
               builder: (context) {
                 if (citiesToShow == null || citiesToShow.length == 0) {
-                  return Container(
-                    height: 100,
-                  );
+                  return Container();
                 } else {
                   return SmoothPageIndicator(
                     controller: _citiesPagesController,
-                    count: _citiesFutureData == null
-                        ? 0
-                        : _citiesFutureData.length,
+                    count: citiesToShow.length,
                     effect: WormEffect(
                       activeDotColor: Colors.white,
                       dotColor: Colors.white70,
