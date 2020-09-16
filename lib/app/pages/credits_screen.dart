@@ -1,5 +1,6 @@
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
+import 'package:air_quality_app/resources/constants.dart' as constants;
 
 class CreditsScreen extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class _CreditsScreenState extends State<CreditsScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: constants.Paddings.paddingAll,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -36,8 +37,9 @@ class _CreditsScreenState extends State<CreditsScreen> {
 
   Widget _buildPageContents() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: constants.Paddings.pageContentsPadding,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildDeveloperCreditsWidget(),
           _buildDataSourceCreditsWidget(),
@@ -55,7 +57,6 @@ class _CreditsScreenState extends State<CreditsScreen> {
           IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: Colors.white,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -64,11 +65,9 @@ class _CreditsScreenState extends State<CreditsScreen> {
           Expanded(
             child: Text(
               "Credits",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              ),
+              style: Theme.of(context).textTheme.headline5.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
               textAlign: TextAlign.start,
             ),
           ),
@@ -78,53 +77,43 @@ class _CreditsScreenState extends State<CreditsScreen> {
   }
 
   Widget _buildDeveloperCreditsWidget() {
-    return Container(
-      width: 300,
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.all(12),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(
-              "About Developer",
-              style: _textStyleForTitle(),
-            ),
-          ),
-          Text(
-            "Rahul Badgujar \nSE-IT Student \nPCCoE Pune, Maharashtra",
-            style: _textStyleForBody(),
-            textAlign: TextAlign.center,
-          )
-        ],
-      ),
-      decoration: AppDecorations.blurRoundBox(),
-    );
+    return _buildCreditsWidget("About Developer",
+        "Rahul Badgujar \nSE-IT Student \nPCCoE Pune, Maharashtra");
   }
 
   Widget _buildDataSourceCreditsWidget() {
+    return _buildCreditsWidget("Live Data", "Source : AirVisual",
+        link: "www.iqair.com");
+  }
+
+  Widget _buildResourcesUsedCreditsWidget() {
+    return _buildCreditsWidget(
+        "Icon Authors", "Freepik, Pixel Perfect \nGoogle, bqlqn, Iconixer",
+        link: "www.flaticon.com");
+  }
+
+  Widget _buildCreditsWidget(String title, String content, {String link = ""}) {
     return Container(
-      width: 300,
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.all(12),
+      padding: constants.Paddings.paddingAll,
+      margin: constants.Margins.rectMargin,
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: constants.Paddings.paddingAll,
             child: Text(
-              "Live Data",
+              title,
               style: _textStyleForTitle(),
             ),
           ),
           Text(
-            "Source : AirVisual",
+            content,
             style: _textStyleForBody(),
             textAlign: TextAlign.center,
           ),
           Padding(
-            padding: const EdgeInsets.all(2.0),
+            padding: constants.Paddings.smallTextPadding,
             child: Text(
-              "www.iqair.com",
+              link,
               style: _textStyleForLinks(),
             ),
           ),
@@ -134,52 +123,19 @@ class _CreditsScreenState extends State<CreditsScreen> {
     );
   }
 
-  TextStyle _textStyleForLinks() =>
-      TextStyle(color: Colors.white, fontSize: 15);
-
-  Widget _buildResourcesUsedCreditsWidget() {
-    return Container(
-      width: 300,
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.all(12),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text(
-              "Icon Authors",
-              style: _textStyleForTitle(),
-            ),
-          ),
-          Text(
-            "Freepik, Pixel Perfect \nGoogle, bqlqn, Iconixer",
-            style: _textStyleForBody(),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(2.0),
-            child: Text(
-              "www.flaticon.com",
-              style: TextStyle(color: Colors.white, fontSize: 15),
-            ),
-          ),
-        ],
-      ),
-      decoration: AppDecorations.blurRoundBox(),
-    );
-  }
-
   TextStyle _textStyleForTitle() {
-    return TextStyle(
-      color: Colors.white,
-      fontSize: 24,
-    );
+    return Theme.of(context).textTheme.headline5;
   }
 
   TextStyle _textStyleForBody() {
-    return TextStyle(
-      color: Colors.white,
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    );
+    return Theme.of(context).textTheme.subtitle1.copyWith(
+          fontWeight: FontWeight.bold,
+        );
+  }
+
+  TextStyle _textStyleForLinks() {
+    Theme.of(context).textTheme.bodyText2.copyWith(
+          color: Colors.white60,
+        );
   }
 }

@@ -26,6 +26,8 @@ class Paddings {
       const EdgeInsets.symmetric(horizontal: 8, vertical: 16);
   static const EdgeInsets formFieldPadding =
       const EdgeInsets.symmetric(horizontal: 4, vertical: 8);
+  static const EdgeInsets smallTextPadding =
+      const EdgeInsets.symmetric(vertical: 4);
 }
 
 class Margins {
