@@ -14,12 +14,25 @@ class Strings {
 class Numbers {
   static const double boxRadius = 24.0;
   static const int maxAllowedCities = 5;
-  static const double paddingAll = 12;
+  static const double smoothControllerDot_dim = 6;
+  static const double bigSvgIconDim = 56;
 }
 
 class Paddings {
-  static const EdgeInsetsGeometry paddingAll =
-      const EdgeInsets.all(Numbers.paddingAll);
+  static const EdgeInsets paddingAll = const EdgeInsets.all(12);
+  static const EdgeInsets pageContentsPadding =
+      const EdgeInsets.symmetric(vertical: 12);
+  static const EdgeInsets paddingSym =
+      const EdgeInsets.symmetric(horizontal: 8, vertical: 16);
+}
+
+class Margins {
+  static const EdgeInsets rectMargin =
+      const EdgeInsets.symmetric(horizontal: 6, vertical: 12);
+}
+
+class Colours {
+  static const Color circleProgressIndicatorBgColor = Colors.white;
 }
 
 enum HomePagePopupMenuButtons { manage_cities, credits }

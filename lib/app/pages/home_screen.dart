@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPageContent() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: constants.Paddings.pageContentsPadding,
       child: Builder(
         builder: (context) {
           if (citiesToShow == null || citiesToShow.length == 0) {
@@ -126,9 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
         } else {
           return Center(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: constants.Paddings.paddingAll,
               child: CircularProgressIndicator(
-                backgroundColor: Colors.white,
+                backgroundColor:
+                    constants.Colours.circleProgressIndicatorBgColor,
               ),
             ),
           );
@@ -148,17 +149,16 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: Icon(
                   Icons.refresh,
-                  color: Colors.white,
                 ),
                 onPressed: () => _doRefreshData(),
               ),
               Expanded(
                 child: Text(
                   constants.Strings.appName,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5
+                      .copyWith(fontWeight: FontWeight.w700),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -166,7 +166,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           Container(
-            padding: const EdgeInsets.only(top: 4),
             child: Builder(
               builder: (context) {
                 if (citiesToShow == null || citiesToShow.length == 0) {
@@ -178,8 +177,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     effect: WormEffect(
                       activeDotColor: Colors.white,
                       dotColor: Colors.white70,
-                      dotHeight: 8,
-                      dotWidth: 8,
+                      dotHeight: constants.Numbers.smoothControllerDot_dim,
+                      dotWidth: constants.Numbers.smoothControllerDot_dim,
                     ),
                   );
                 }
@@ -193,19 +192,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCityDetailTitle(AsyncSnapshot<AirVisualData> snapshot) {
     Data localAreaDetails = snapshot.data.data;
-
     return RichText(
       text: TextSpan(
         text: "${localAreaDetails.city}",
-        style: TextStyle(
-            fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.headline6,
         children: [
           TextSpan(
             text: "   ${localAreaDetails.state}, ${localAreaDetails.country}",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
+            style: Theme.of(context).textTheme.subtitle2,
           ),
         ],
       ),
@@ -244,10 +238,12 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         mainpage_widgets.buildShortDetailWidget(
+          context,
           constants.weatherStatusFromWeatherStatusCode(weatherStatusCode),
           weatherIconPathFromWeatherCode(weatherStatusCode),
         ),
         mainpage_widgets.buildShortDetailWidget(
+          context,
           constants.airQualityFromAqi(aqiUS),
           pollutionIconPathFromAqi(aqiUS),
         ),
@@ -265,18 +261,18 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           mainpage_widgets.buildTitleDataWidget(
-              snapshot.data.data.current.pollution.aqiUS, "aqi"),
+              context, snapshot.data.data.current.pollution.aqiUS, "aqi"),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: constants.Paddings.paddingSym,
             child: Column(
               children: [
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "US AQI", pollutionData.aqiUS, ""),
+                    context, "US AQI", pollutionData.aqiUS, ""),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "US Pollutant", pollutionData.mainPollutantUS, ""),
+                    context, "US Pollutant", pollutionData.mainPollutantUS, ""),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "China AQI", pollutionData.aqiCN, ""),
-                mainpage_widgets.buildDataValueDetailWidget(
+                    context, "China AQI", pollutionData.aqiCN, ""),
+                mainpage_widgets.buildDataValueDetailWidget(context,
                     "China Pollutant", pollutionData.mainPollutantCN, ""),
               ],
             ),
@@ -293,22 +289,23 @@ class _HomeScreenState extends State<HomeScreen> {
       AsyncSnapshot<AirVisualData> snapshot) {
     Weather weatherData = snapshot.data.data.current.weather;
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: constants.Paddings.paddingAll,
       child: Column(
         children: [
           mainpage_widgets.buildTitleDataWidget(
-              snapshot.data.data.current.weather.temprature, "°C"),
+              context, snapshot.data.data.current.weather.temprature, "°C"),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
               children: [
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "Atm Pressure", weatherData.pressure, "hPa"),
+                    context, "Atm Pressure", weatherData.pressure, "hPa"),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "Humidity", weatherData.humidity, "%"),
+                    context, "Humidity", weatherData.humidity, "%"),
                 mainpage_widgets.buildDataValueDetailWidget(
-                    "Wind Speed", weatherData.windSpeed, "m/s"),
+                    context, "Wind Speed", weatherData.windSpeed, "m/s"),
                 mainpage_widgets.buildDataValueDetailWidget(
+                    context,
                     "Wind Direction",
                     constants.windDirectionFromAngle(
                       weatherData.windDirection,
@@ -415,7 +412,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return PopupMenuButton<constants.HomePagePopupMenuButtons>(
       icon: Icon(
         Icons.more_vert,
-        color: Colors.white,
       ),
       itemBuilder: (context) {
         return <PopupMenuEntry<constants.HomePagePopupMenuButtons>>[

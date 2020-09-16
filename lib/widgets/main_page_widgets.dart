@@ -1,4 +1,4 @@
-import 'package:air_quality_app/resources/constants.dart';
+import 'package:air_quality_app/resources/constants.dart' as constants;
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,7 +7,7 @@ Widget buildTimeStampWidget(String timeStamp) {
   return Container(
     margin: EdgeInsets.only(top: 8),
     child: Text(
-      "Last Updated : " + updateStatusFromTimeStamp(timeStamp),
+      "Last Updated : " + constants.updateStatusFromTimeStamp(timeStamp),
       style: TextStyle(
         color: Colors.white,
         fontSize: 12,
@@ -16,24 +16,26 @@ Widget buildTimeStampWidget(String timeStamp) {
   );
 }
 
-Widget buildDataValueDetailWidget(String data, dynamic value, String unit) {
+Widget buildDataValueDetailWidget(
+    BuildContext context, String data, dynamic value, String unit) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Text(
         data + " : ",
-        style: TextStyle(color: Colors.white, fontSize: 16),
+        style: Theme.of(context).textTheme.subtitle2,
       ),
       Text(
         "$value $unit",
-        style: TextStyle(
-            color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        style: Theme.of(context).textTheme.subtitle2.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
       ),
     ],
   );
 }
 
-Widget buildTitleDataWidget(int data, String unit) {
+Widget buildTitleDataWidget(BuildContext context, int data, String unit) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
@@ -42,13 +44,15 @@ Widget buildTitleDataWidget(int data, String unit) {
         children: [
           Text(
             "$data",
-            style: TextStyle(
-                color: Colors.white, fontSize: 56, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headline2.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
           Text(
             unit,
-            style: TextStyle(
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.subtitle1.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),
@@ -56,28 +60,29 @@ Widget buildTitleDataWidget(int data, String unit) {
   );
 }
 
-Widget buildShortDetailWidget(String heading, String iconPath) {
+Widget buildShortDetailWidget(
+    BuildContext context, String heading, String iconPath) {
   return Expanded(
     child: Container(
-      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      margin: constants.Margins.rectMargin,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: constants.Paddings.paddingAll,
         child: Column(
           children: [
             Text(
               "$heading",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .subtitle1
+                  .copyWith(fontWeight: FontWeight.bold),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: constants.Paddings.paddingAll,
               child: SvgPicture.asset(
                 iconPath,
-                color: Colors.white,
-                width: 56,
-                height: 56,
+                color: Theme.of(context).iconTheme.color,
+                width: constants.Numbers.bigSvgIconDim,
+                height: constants.Numbers.bigSvgIconDim,
               ),
             ),
           ],
