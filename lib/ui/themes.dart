@@ -11,7 +11,7 @@ TextTheme getAppTextTheme(TextTheme base) {
     headline4: base.headline4.copyWith(),
     headline5: base.headline5.copyWith(
       color: Colors.white,
-      fontSize: 23,
+      fontSize: 24,
     ),
     headline6: base.headline6.copyWith(
       color: Colors.white,
@@ -25,6 +25,10 @@ TextTheme getAppTextTheme(TextTheme base) {
       color: Colors.white,
       fontSize: 15,
     ),
+    bodyText2: base.bodyText2.copyWith(
+      color: Colors.white,
+      fontSize: 12,
+    ),
   );
 }
 
@@ -35,9 +39,18 @@ IconThemeData getAppIconTheme(IconThemeData base) {
   );
 }
 
+FloatingActionButtonThemeData getAppFloatingActionsButtonTheme(
+    FloatingActionButtonThemeData base) {
+  return base.copyWith(
+    backgroundColor: Colors.white,
+  );
+}
+
 ThemeData getAppTheme(ThemeData base) {
   return base.copyWith(
     textTheme: getAppTextTheme(base.textTheme),
     iconTheme: getAppIconTheme(base.iconTheme),
+    floatingActionButtonTheme:
+        getAppFloatingActionsButtonTheme(base.floatingActionButtonTheme),
   );
 }

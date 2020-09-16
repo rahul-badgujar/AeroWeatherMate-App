@@ -24,11 +24,15 @@ class Paddings {
       const EdgeInsets.symmetric(vertical: 12);
   static const EdgeInsets paddingSym =
       const EdgeInsets.symmetric(horizontal: 8, vertical: 16);
+  static const EdgeInsets formFieldPadding =
+      const EdgeInsets.symmetric(horizontal: 4, vertical: 8);
 }
 
 class Margins {
   static const EdgeInsets rectMargin =
-      const EdgeInsets.symmetric(horizontal: 6, vertical: 12);
+      const EdgeInsets.symmetric(horizontal: 6, vertical: 6);
+  static const EdgeInsets bigListTileMargin =
+      const EdgeInsets.symmetric(vertical: 4);
 }
 
 class Colours {

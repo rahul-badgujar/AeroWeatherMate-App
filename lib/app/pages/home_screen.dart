@@ -192,16 +192,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCityDetailTitle(AsyncSnapshot<AirVisualData> snapshot) {
     Data localAreaDetails = snapshot.data.data;
-    return RichText(
-      text: TextSpan(
-        text: "${localAreaDetails.city}",
-        style: Theme.of(context).textTheme.headline6,
-        children: [
-          TextSpan(
-            text: "   ${localAreaDetails.state}, ${localAreaDetails.country}",
-            style: Theme.of(context).textTheme.subtitle2,
-          ),
-        ],
+    return Container(
+      margin: constants.Margins.rectMargin,
+      child: RichText(
+        text: TextSpan(
+          text: "${localAreaDetails.city}",
+          style: Theme.of(context).textTheme.headline6,
+          children: [
+            TextSpan(
+              text: "   ${localAreaDetails.state}, ${localAreaDetails.country}",
+              style: Theme.of(context).textTheme.subtitle2,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -255,8 +258,8 @@ class _HomeScreenState extends State<HomeScreen> {
       AsyncSnapshot<AirVisualData> snapshot) {
     Pollution pollutionData = snapshot.data.data.current.pollution;
     return Container(
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.only(top: 18),
+      padding: constants.Paddings.paddingAll,
+      margin: constants.Margins.rectMargin,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -278,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           mainpage_widgets.buildTimeStampWidget(
-              snapshot.data.data.current.pollution.timeStamp),
+              context, snapshot.data.data.current.pollution.timeStamp),
         ],
       ),
       decoration: AppDecorations.blurRoundBox(),
@@ -290,12 +293,13 @@ class _HomeScreenState extends State<HomeScreen> {
     Weather weatherData = snapshot.data.data.current.weather;
     return Container(
       padding: constants.Paddings.paddingAll,
+      margin: constants.Margins.rectMargin,
       child: Column(
         children: [
           mainpage_widgets.buildTitleDataWidget(
               context, snapshot.data.data.current.weather.temprature, "°C"),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: constants.Paddings.paddingSym,
             child: Column(
               children: [
                 mainpage_widgets.buildDataValueDetailWidget(
@@ -315,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           mainpage_widgets.buildTimeStampWidget(
-              snapshot.data.data.current.weather.timeStamp),
+              context, snapshot.data.data.current.weather.timeStamp),
         ],
       ),
       decoration: AppDecorations.blurRoundBox(),
@@ -335,13 +339,10 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => _requestManageCitiesRoute(),
         ),
         Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: constants.Paddings.paddingAll,
           child: Text(
             "No Cities to Show, Add New City",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            style: Theme.of(context).textTheme.subtitle2,
           ),
         ),
       ],

@@ -3,15 +3,13 @@ import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-Widget buildTimeStampWidget(String timeStamp) {
+Widget buildTimeStampWidget(BuildContext context, String timeStamp) {
   return Container(
-    margin: EdgeInsets.only(top: 8),
     child: Text(
       "Last Updated : " + constants.updateStatusFromTimeStamp(timeStamp),
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 12,
-      ),
+      style: Theme.of(context).textTheme.bodyText2.copyWith(
+            color: Colors.white70,
+          ),
     ),
   );
 }

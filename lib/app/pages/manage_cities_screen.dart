@@ -6,6 +6,7 @@ import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
 import 'package:location/location.dart';
+import 'package:air_quality_app/resources/constants.dart' as constants;
 
 class ManageCitiesScreen extends StatefulWidget {
   @override
@@ -35,7 +36,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: constants.Paddings.paddingAll,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -50,15 +51,19 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.white,
-        icon: Icon(
-          Icons.add,
-          color: Colors.black,
-          size: 35,
+        //backgroundColor: Colors.white,
+        icon: IconTheme(
+          data: Theme.of(context).iconTheme.copyWith(color: Colors.black),
+          child: Icon(
+            Icons.add,
+          ),
         ),
         label: Text(
           "New City",
-          style: TextStyle(color: Colors.black, fontSize: 16),
+          style: Theme.of(context)
+              .textTheme
+              .subtitle2
+              .copyWith(color: Colors.black),
         ),
         onPressed: () {
           showDialog(
@@ -84,18 +89,16 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
           IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: Colors.white,
             ),
             onPressed: () => _onExitScreen(),
           ),
           Expanded(
             child: Text(
               "Manage Cities",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline5
+                  .copyWith(fontWeight: FontWeight.w700),
               textAlign: TextAlign.start,
             ),
           ),
@@ -106,7 +109,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
 
   Widget _buildPageContents() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: constants.Paddings.pageContentsPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,7 +120,6 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
                 return _buildCityLabelWidget(index);
               },
               itemCount: citiesBeingShown.length,
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             ),
           ),
         ],
@@ -128,30 +130,26 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   Widget _buildCityLabelWidget(int index) {
     dbhelper.City city = citiesBeingShown[index];
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      margin: EdgeInsets.symmetric(horizontal: 32, vertical: 4),
+      padding: constants.Paddings.paddingAll,
+      margin: constants.Margins.bigListTileMargin,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: Text(
               city.city ?? "",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.subtitle1.copyWith(
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.w600,
+                  ),
               textAlign: TextAlign.center,
             ),
           ),
           IconButton(
             icon: Icon(
               Icons.delete_rounded,
-              color: Colors.white,
-              size: 24,
             ),
             onPressed: () => _onDeleteButtonForCityLabelClicked(city),
-            padding: EdgeInsets.zero,
           ),
         ],
       ),
@@ -202,10 +200,9 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
       duration: Duration(seconds: 1),
       content: Text(
         text,
-        style: TextStyle(
-          color: Colors.black87,
-          fontSize: 16,
-        ),
+        style: Theme.of(context).textTheme.subtitle1.copyWith(
+              color: Colors.black,
+            ),
         textAlign: TextAlign.center,
       ),
     );
@@ -213,7 +210,8 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
   }
 
   Future<void> _onDeleteButtonForCityLabelClicked(dbhelper.City city) async {
-    await deleteCityLocally(city);
+    _showSnackbar("Hello");
+    //await deleteCityLocally(city);
   }
 }
 
@@ -272,11 +270,11 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
       },
       icon: Icon(
         Icons.location_searching_rounded,
-        size: 24,
       ),
       label: Text(
         "Use Current Location",
-        style: TextStyle(fontSize: 16),
+        style:
+            Theme.of(context).textTheme.subtitle2.copyWith(color: Colors.black),
       ),
     );
   }
@@ -284,7 +282,7 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
   Widget _buildCountriesSelectionDropdown() {
     print("Country Selection Dropdown Rebuilded");
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: constants.Paddings.formFieldPadding,
       child: ddsearch.DropdownSearch(
         items: countriesList ?? <String>[],
         mode: ddsearch.Mode.BOTTOM_SHEET,
@@ -299,7 +297,7 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
   Widget _buildStateSelectionDropdown() {
     print("State Selection Dropdown Rebuilded");
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: constants.Paddings.formFieldPadding,
       child: ddsearch.DropdownSearch(
         items: statesList ?? <String>[],
         mode: ddsearch.Mode.BOTTOM_SHEET,
@@ -314,7 +312,7 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
   Widget _buildCitySelectionDropdown() {
     print("City Selection Dropdown Rebuilded");
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: constants.Paddings.formFieldPadding,
       child: ddsearch.DropdownSearch(
         items: citiesList ?? <String>[],
         mode: ddsearch.Mode.BOTTOM_SHEET,
@@ -333,23 +331,21 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
 
   Widget _buildAddCityDataButton() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: constants.Paddings.paddingAll,
       child: RaisedButton.icon(
         color: Colors.green,
         disabledColor: Colors.black38,
         icon: Icon(
           Icons.add_location,
-          size: 30,
-          color: Colors.white,
+          color: Theme.of(context).iconTheme.color,
         ),
         label: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 4),
+          padding: constants.Paddings.paddingAll,
           child: Text(
             citySelected ?? "",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-            ),
+            style: Theme.of(context).textTheme.subtitle1.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
             textAlign: TextAlign.center,
           ),
         ),
