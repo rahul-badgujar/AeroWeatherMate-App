@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Strings {
   static const String appName = "AeroWeatherMate";
   static const String defaultTempScale = "C";
@@ -10,16 +12,14 @@ class Strings {
 }
 
 class Numbers {
-  static const int defaultTemprature = 35;
-  static const int defaultAtmPressure = 994;
-  static const double defaultHumidity = 87;
-  static const double defaultWindSpeed = 2;
-  static const int defaultWindDirection = 239;
-  static const int defaultAqiUS = 7;
-  static const double defaultPollutantConcentration = 20;
-  static const int defaultPollutionAqi = 18;
-  static const double defaultWeatherIconSize = 30;
+  static const double boxRadius = 24.0;
   static const int maxAllowedCities = 5;
+  static const double paddingAll = 12;
+}
+
+class Paddings {
+  static const EdgeInsetsGeometry paddingAll =
+      const EdgeInsets.all(Numbers.paddingAll);
 }
 
 enum HomePagePopupMenuButtons { manage_cities, credits }

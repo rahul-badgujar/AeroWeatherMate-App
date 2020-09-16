@@ -11,7 +11,7 @@ class AeroWeatherMateApp extends StatelessWidget {
     return MaterialApp(
       title: Strings.appName,
       debugShowCheckedModeBanner: false,
-      theme: appTheme,
+      theme: getAppTheme(Theme.of(context)),
       home: HomeScreen(),
     );
   }

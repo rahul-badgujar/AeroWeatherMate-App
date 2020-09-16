@@ -1,19 +1,20 @@
-import 'package:air_quality_app/resources/gradients_rsc.dart';
+import 'package:air_quality_app/resources/gradients_rsc.dart' as gradients;
 import 'package:flutter/material.dart';
+import 'package:air_quality_app/resources/constants.dart' as constants;
 
 class AppDecorations {
   static Decoration blurRoundBox() {
     return BoxDecoration(
       color: Color.fromRGBO(255, 255, 255, 200),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(constants.Numbers.boxRadius),
     );
   }
 
   static Decoration gradientBox(
-      {Gradient gradientTOFill = AppGradients.defaultGradient}) {
+      {Gradient gradientTOFill = gradients.AppGradients.defaultGradient}) {
     return BoxDecoration(
       gradient: gradientTOFill == null
-          ? AppGradients.defaultGradient
+          ? gradients.AppGradients.defaultGradient
           : gradientTOFill,
     );
   }

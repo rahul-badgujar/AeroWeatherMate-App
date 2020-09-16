@@ -1,46 +1,25 @@
 import 'package:flutter/material.dart';
 
-ThemeData appTheme = ThemeData(
+TextTheme getAppTextTheme(TextTheme base) {
+  return base.copyWith(
+    headline1: base.headline1.copyWith(),
+    headline2: base.headline2.copyWith(),
+    headline3: base.headline3.copyWith(),
+    headline4: base.headline4.copyWith(),
+    headline5: base.headline5.copyWith(),
+    headline6: base.headline6.copyWith(),
+    subtitle1: base.subtitle1.copyWith(),
+    subtitle2: base.subtitle2.copyWith(),
+  );
+}
 
-    /* textTheme: TextTheme(
-    bodyText1: TextStyle(
-      color: Colors.white,
-    ),
-    bodyText2: TextStyle(
-      color: Colors.white,
-    ),
-    headline1: TextStyle(
-      color: Colors.white,
-    ),
-    headline2: TextStyle(
-      color: Colors.white,
-    ),
-    headline3: TextStyle(
-      color: Colors.white,
-    ),
-    headline4: TextStyle(
-      color: Colors.white,
-    ),
-    headline5: TextStyle(
-      color: Colors.white,
-    ),
-    headline6: TextStyle(
-      color: Colors.white,
-    ),
-    subtitle1: TextStyle(
-      color: Colors.white,
-    ),
-    subtitle2: TextStyle(
-      color: Colors.white,
-    ),
-    caption: TextStyle(
-      color: Colors.white,
-    ),
-    overline: TextStyle(
-      color: Colors.white,
-    ),
-    button: TextStyle(
-      color: Colors.white,
-    ),
-  ), */
-    );
+IconThemeData getAppIconTheme(IconThemeData base) {
+  return base.copyWith();
+}
+
+ThemeData getAppTheme(ThemeData base) {
+  return base.copyWith(
+    textTheme: getAppTextTheme(base.textTheme),
+    iconTheme: getAppIconTheme(base.iconTheme),
+  );
+}

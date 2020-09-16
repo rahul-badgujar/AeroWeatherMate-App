@@ -9,7 +9,7 @@ import 'package:air_quality_app/widgets/main_page_widgets.dart'
     as mainpage_widgets;
 import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:air_quality_app/api/network/http_client.dart';
-import 'package:air_quality_app/resources/constants.dart' as consts;
+import 'package:air_quality_app/resources/constants.dart' as constants;
 import 'package:air_quality_app/resources/icons_rsc.dart';
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: constants.Paddings.paddingAll,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -154,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Expanded(
                 child: Text(
-                  consts.Strings.appName,
+                  constants.Strings.appName,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -244,11 +244,11 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         mainpage_widgets.buildShortDetailWidget(
-          consts.weatherStatusFromWeatherStatusCode(weatherStatusCode),
+          constants.weatherStatusFromWeatherStatusCode(weatherStatusCode),
           weatherIconPathFromWeatherCode(weatherStatusCode),
         ),
         mainpage_widgets.buildShortDetailWidget(
-          consts.airQualityFromAqi(aqiUS),
+          constants.airQualityFromAqi(aqiUS),
           pollutionIconPathFromAqi(aqiUS),
         ),
       ],
@@ -310,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Wind Speed", weatherData.windSpeed, "m/s"),
                 mainpage_widgets.buildDataValueDetailWidget(
                     "Wind Direction",
-                    consts.windDirectionFromAngle(
+                    constants.windDirectionFromAngle(
                       weatherData.windDirection,
                     ),
                     ""),
@@ -412,15 +412,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPopupMenuButtons() {
-    return PopupMenuButton<consts.HomePagePopupMenuButtons>(
+    return PopupMenuButton<constants.HomePagePopupMenuButtons>(
       icon: Icon(
         Icons.more_vert,
         color: Colors.white,
       ),
       itemBuilder: (context) {
-        return <PopupMenuEntry<consts.HomePagePopupMenuButtons>>[
+        return <PopupMenuEntry<constants.HomePagePopupMenuButtons>>[
           PopupMenuItem(
-            value: consts.HomePagePopupMenuButtons.manage_cities,
+            value: constants.HomePagePopupMenuButtons.manage_cities,
             child: Text(
               "Manage Cities",
               style: TextStyle(
@@ -431,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           PopupMenuItem(
-            value: consts.HomePagePopupMenuButtons.credits,
+            value: constants.HomePagePopupMenuButtons.credits,
             child: Text(
               "Credits",
               style: TextStyle(
@@ -444,9 +444,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ];
       },
       onSelected: (choice) {
-        if (choice == consts.HomePagePopupMenuButtons.manage_cities) {
+        if (choice == constants.HomePagePopupMenuButtons.manage_cities) {
           _requestManageCitiesRoute();
-        } else if (choice == consts.HomePagePopupMenuButtons.credits) {
+        } else if (choice == constants.HomePagePopupMenuButtons.credits) {
           _requestCreditsRoute();
         }
       },
