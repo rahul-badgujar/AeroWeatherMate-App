@@ -1,5 +1,7 @@
+// Interface for API Exceptions
 abstract class ApiException implements Exception {}
 
+// API Exceptions
 class UnknownApiException extends ApiException {
   static const String errorMessage = "Unknown API Exception Occured";
   @override

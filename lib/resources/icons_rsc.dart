@@ -1,3 +1,4 @@
+// function to get Weather Icon from Weather Code
 String weatherIconPathFromWeatherCode(String code) {
   print(code);
   if (code == "01d")
@@ -21,9 +22,10 @@ String weatherIconPathFromWeatherCode(String code) {
   else if (code == "50d" || code == "15n")
     return "assets/svg/mist.svg";
   else
-    return "assets/svg/rain.svg";
+    return "assets/svg/clear_day.svg";
 }
 
+// function to get Pollution Icon from AQI
 String pollutionIconPathFromAqi(int aqi) {
   if (0 <= aqi && aqi <= 50)
     return "assets/svg/aqi_0_50.svg";

@@ -8,32 +8,37 @@ import 'package:air_quality_app/api/data_models/air_visual_data.dart';
 import 'package:http/http.dart' as http;
 
 class HttpClient {
+  // Making Class Singleton
   HttpClient._privateConstructor();
   static final HttpClient _instance = HttpClient._privateConstructor();
   factory HttpClient() {
     return _instance;
   }
 
+  // Method to request Data using LocationData
   Future<AirVisualData> fetchcurrentAirVisualDataUsingCoordinates(
       LocationData location) async {
     String apiRequestUrl = url.dataUsingCoordinatesUrl(
-        latitude: location.latitude, longitude: location.longitude);
+        latitude: location.latitude,
+        longitude: location.longitude); // form the URL
     try {
-      final http.Response response = await http.get(apiRequestUrl);
-      final int statusCode = response.statusCode;
+      final http.Response response =
+          await http.get(apiRequestUrl); // wait and request Data
+      final int statusCode = response.statusCode; // store statusCode
       if (statusCode == 200) {
-        if (response.body.isEmpty)
+        // CODE 200 for OK
+        if (response.body.isEmpty) // if response is empty
           throw EmptyApiResultException();
         else {
-          //print(response.body);
-          AirVisualData data =
-              AirVisualData.fromJson(json.decode(response.body));
-          return data;
+          AirVisualData data = AirVisualData.fromJson(
+              json.decode(response.body)); // extract Data
+          return data; // return Data
         }
       } else {
-        _handleExceptions(statusCode);
+        _handleExceptions(statusCode); // handle API Exceptions
       }
     } on Exception catch (exception) {
+      // catch and Log Exceptions
       if (exception is SocketException)
         print(ConnectionException().toString());
       else if (exception is ApiException) print(exception.toString());
@@ -41,14 +46,16 @@ class HttpClient {
     return null;
   }
 
+  // method to fetch Data using Area Details
   Future<AirVisualData> fetchcurrentAirVisualDataUsingAreaDetails(
       City cityDetails) async {
     String apiRequestUrl = url.dataUsingCity(
         city: cityDetails.city,
         state: cityDetails.state,
-        country: cityDetails.country);
+        country: cityDetails.country); // form URL
     try {
-      final http.Response response = await http.get(apiRequestUrl);
+      final http.Response response =
+          await http.get(apiRequestUrl); // fetch Data
       final int statusCode = response.statusCode;
       if (statusCode == 200) {
         if (response.body.isEmpty)
@@ -71,6 +78,7 @@ class HttpClient {
     return null;
   }
 
+  // method to fetch List of Countries
   Future<List<Country>> fetchListOfCountries() async {
     String apiRequestUrl = url.countriesListUrl();
     try {
@@ -81,14 +89,17 @@ class HttpClient {
           throw EmptyApiResultException();
         else {
           //print(response.body);
-          Map<String, dynamic> jsonData = json.decode(response.body);
+          Map<String, dynamic> jsonData =
+              json.decode(response.body); // decode Json into Map
           List<dynamic> list = (jsonData["data"] as List)
               ?.map((e) => e == null ? null : e["country"])
-              ?.toList();
-          List<String> countriesStringList = list.cast<String>().toList();
+              ?.toList(); // retrive the Countries List from Map
+          List<String> countriesStringList = list
+              .cast<String>()
+              .toList(); // convert the List<dynamic> to List<String>
           List<Country> countriesList = countriesStringList
               ?.map((e) => e == null ? null : Country(country: e))
-              .toList();
+              .toList(); // convert the List<String> to List<City>
           return countriesList;
         }
       } else {
@@ -102,6 +113,7 @@ class HttpClient {
     return null;
   }
 
+  // method to fetch List of States in Country provided
   Future<List<State>> fetchListOfStatesFromCountry({String country}) async {
     String apiRequestUrl = url.statesListInCountryUrl(country: country);
     try {
@@ -168,9 +180,11 @@ class HttpClient {
     return null;
   }
 
+  // method to handle API Exceptions
   void _handleExceptions(int statusCode) {
     print("Error in Fetching Data : " + statusCode.toString());
-    final int errorType = statusCode % 100;
+    final int errorType =
+        statusCode % 100; // depeding on Code Type, get Excpetion type
     if (errorType == 3)
       throw RedirectionalApiException();
     else if (errorType == 4)

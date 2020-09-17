@@ -1,6 +1,7 @@
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:air_quality_app/resources/constants.dart' as constants;
+import 'package:air_quality_app/resources/gradients_rsc.dart' as gradients;
 
 class CreditsScreen extends StatefulWidget {
   @override
@@ -14,7 +15,8 @@ class _CreditsScreenState extends State<CreditsScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: AppDecorations.gradientBox(),
+            decoration: AppDecorations.gradientBox(
+                gradientTOFill: gradients.defaultGradient),
           ),
           SafeArea(
             child: Padding(

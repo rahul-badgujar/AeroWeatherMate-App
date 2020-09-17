@@ -11,11 +11,10 @@ class AppDecorations {
   }
 
   static Decoration gradientBox(
-      {Gradient gradientTOFill = gradients.AppGradients.defaultGradient}) {
+      {Gradient gradientTOFill = gradients.defaultGradient}) {
     return BoxDecoration(
-      gradient: gradientTOFill == null
-          ? gradients.AppGradients.defaultGradient
-          : gradientTOFill,
+      gradient:
+          gradientTOFill == null ? gradients.defaultGradient : gradientTOFill,
     );
   }
 }

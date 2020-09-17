@@ -16,7 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:location/location.dart';
-import 'package:air_quality_app/resources/gradients_rsc.dart';
+import 'package:air_quality_app/resources/gradients_rsc.dart' as gradients;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Background of App
             decoration: AppDecorations.gradientBox(
                 // Container with Gradient Decoration
-                gradientTOFill: AppGradients.defaultGradient),
+                gradientTOFill: gradients.defaultGradient),
           ),
           SafeArea(
             // Safe Area to avoid cluttering of Content by Notch

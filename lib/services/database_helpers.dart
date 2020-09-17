@@ -6,14 +6,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:air_quality_app/resources/constants.dart' as consts;
 
-const String citiesTable = "CitiesTable";
-const String userLoadedCitiesTable = "UserLoadedCitiesTable";
-const String userLoadedStatesTable = "UserLoadedStatesTable";
-const String userLoadedCountriesTable = "UserLoadedCountriesTable";
+// Column and Table Names
+const String citiesTable = "CitiesTable"; // stores Cities user has Selected
+const String userLoadedCitiesTable =
+    "UserLoadedCitiesTable"; // stores the API Data for List of Cities
+const String userLoadedStatesTable =
+    "UserLoadedStatesTable"; // stores the API Data for List of States
+const String userLoadedCountriesTable =
+    "UserLoadedCountriesTable"; // stores the API Data for List of Countries
 const String cityColumn = "City";
 const String stateColumn = "State";
 const String countryColumn = "Country";
 
+/*
+Datum Classes with helper methods like fromString, toString, fromMap, toMap
+*/
 class City {
   final String city;
   final String state;
@@ -55,6 +62,7 @@ class City {
     return "${this.city}&${this.state}&${this.country}";
   }
 
+  // overriding == operator for City Type
   @override
   bool operator ==(other) {
     if (other is City) {
@@ -118,36 +126,47 @@ class State {
   }
 }
 
+// Database Helper Class
 class DatabaseHelper {
-  static const String _databaseName = "ApiSavedData.db";
-  static const int _databaseVersion = 1;
+  static const String _databaseName = "ApiSavedData.db"; // Database Name
+  static const int _databaseVersion = 1; // Database Version
+  // ERROR CODES for Database Queries
   static const int ERROR_CITY_ALREADY_PRESENT = -23;
   static const int ERROR_MAX_CITIES_LIMIT_REACHED = -24;
 
+  // making Class Singleton
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper _instace = DatabaseHelper._privateConstructor();
   factory DatabaseHelper() {
     return _instace;
   }
 
+  // Single object of Database to maitain throughout App Lifetime
   static Database _database;
+  // getter for Database Object
   Future<Database> get database async {
     if (_database == null) {
-      _database = await _initDatabase();
+      // if Database not open,
+      _database = await _initDatabase(); // open Databse
     }
     return _database;
   }
 
+  // method to Open Database
   Future<Database> _initDatabase() async {
-    Directory documentDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentDirectory.path, _databaseName);
+    Directory documentDirectory =
+        await getApplicationDocumentsDirectory(); // get Application Documentary Directory
+    String path =
+        join(documentDirectory.path, _databaseName); // complete Database Path
     return await openDatabase(
+      // request to Open Database
       path,
       version: _databaseVersion,
-      onCreate: _onCreate,
+      onCreate: _onCreate, // called when Database is initialized First Time
     );
   }
 
+  // Create Table Command for all Tables
   FutureOr<void> _onCreate(Database db, int version) async {
     db.execute('''
       CREATE TABLE $citiesTable (
@@ -176,25 +195,32 @@ class DatabaseHelper {
       ''');
   }
 
+  // method to insert city in Saved Cities
   Future<int> insertCity(City city) async {
     Database db = await database;
     if (await queryCity(city) != null) {
+      // check if that City is already present
       return DatabaseHelper.ERROR_CITY_ALREADY_PRESENT;
     }
     if (await countCities() >= consts.Numbers.maxAllowedCities) {
+      // check for Cities Limit
       return DatabaseHelper.ERROR_MAX_CITIES_LIMIT_REACHED;
     }
-    int id = await db.insert(citiesTable, city.toMap());
-    return id;
+    int id = await db.insert(
+        citiesTable, city.toMap()); // otherwise Save the city in Database
+    return id; // return the position of insertion of city
   }
 
+  // method to save User Loaded Countries from API
   Future<void> saveUserLoadedCountries(List<Country> countries) async {
     Database db = await database;
-    Batch batch = db.batch();
+    Batch batch = db.batch(); // batch for holding changes
     for (Country country in countries) {
-      batch.insert(userLoadedCountriesTable, country.toMap());
+      batch.insert(
+          userLoadedCountriesTable, country.toMap()); // add all the cities
     }
-    await batch.commit(noResult: true);
+    await batch.commit(
+        noResult: true); // commit the batch without expecting result
     print("User Loaded Countries saved");
   }
 
@@ -218,13 +244,16 @@ class DatabaseHelper {
     print("User Loaded Cities saved");
   }
 
+  // method to retrive User Loaded Countries
   Future<List<Country>> retrieveUserLoadedCountries() async {
     Database db = await database;
-    List<Map> found =
-        await db.query(userLoadedCountriesTable) ?? <String, dynamic>{};
+    List<Map> found = await db.query(userLoadedCountriesTable) ??
+        <Map>[]; // retrive the list of Countries as Map
     if (found.length > 0) {
-      List<Country> countriesLoaded =
-          found?.map((e) => e == null ? null : Country.fromMap(e))?.toList();
+      // if the list is non-empty
+      List<Country> countriesLoaded = found
+          ?.map((e) => e == null ? null : Country.fromMap(e))
+          ?.toList(); // convert maps list to List<Country>
       //print("User Loaded Countries Retrieved  : $countriesLoaded");
       return countriesLoaded;
     }
@@ -239,7 +268,7 @@ class DatabaseHelper {
           where: "$countryColumn=?",
           whereArgs: [whereCountry.country],
         ) ??
-        <String, dynamic>{};
+        <Map>[];
     if (found.length > 0) {
       List<State> statesLoaded =
           found?.map((e) => e == null ? null : State.fromMap(e))?.toList();
@@ -257,7 +286,7 @@ class DatabaseHelper {
           where: "$stateColumn=? AND $countryColumn=?",
           whereArgs: [whereState.state, whereState.country],
         ) ??
-        <String, dynamic>{};
+        <Map>[];
     if (found.length > 0) {
       List<City> citiesLoaded =
           found?.map((e) => e == null ? null : City.fromMap(e))?.toList();
@@ -268,6 +297,7 @@ class DatabaseHelper {
     return null;
   }
 
+  // method to Query about a City in UserSavedCities
   Future<City> queryCity(City city) async {
     Database db = await database;
     List<Map> found = await db.query(
@@ -275,40 +305,47 @@ class DatabaseHelper {
       columns: [cityColumn, stateColumn, countryColumn],
       where: "$cityColumn=? AND $stateColumn=? AND $countryColumn=?",
       whereArgs: [city.city, city.state, city.country],
-    );
+    ); // query Request
     if (found.length > 0) {
-      return City.fromMap(found.first);
+      // if got the response
+      return City.fromMap(found.first); // return the first response
     }
 
     return null;
   }
 
+  // method to get List of All Countries from UserSavedCities
   Future<List<City>> queryAllCities() async {
     Database db = await database;
-    List<Map> found = await db.query(citiesTable);
+    List<Map> found = await db.query(citiesTable); // get Map for all responses
     if (found.length > 0) {
-      List<City> cities =
-          found?.map((e) => e == null ? null : City.fromMap(e))?.toList();
+      // if result is non-empty
+      List<City> cities = found
+          ?.map((e) => e == null ? null : City.fromMap(e))
+          ?.toList(); // convert map to List<City>
       return cities;
     }
     return null;
   }
 
+  // method to delete a City from UserSavedCities
   Future<int> deleteCity(City city) async {
     Database db = await database;
     return db.delete(
       citiesTable,
       where: "$cityColumn=? AND $stateColumn=? AND $countryColumn=?",
       whereArgs: [city.city, city.state, city.country],
-    );
+    ); // delete request
   }
 
+  // method to count the cities in UserSavedCities
   Future<int> countCities() async {
     Database db = await database;
     return Sqflite.firstIntValue(
         await db.rawQuery("SELECT COUNT(*) FROM $citiesTable"));
   }
 
+  // method to clear UserSavedCities Database
   Future<int> deleteAllCities() async {
     Database db = await database;
     return db.delete(citiesTable);

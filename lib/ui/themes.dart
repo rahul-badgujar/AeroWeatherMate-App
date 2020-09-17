@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// TextTheme of App
 TextTheme getAppTextTheme(TextTheme base) {
   return base.copyWith(
     headline1: base.headline1.copyWith(),
@@ -32,6 +33,7 @@ TextTheme getAppTextTheme(TextTheme base) {
   );
 }
 
+// Icon Theme for App
 IconThemeData getAppIconTheme(IconThemeData base) {
   return base.copyWith(
     color: Colors.white,
@@ -39,6 +41,7 @@ IconThemeData getAppIconTheme(IconThemeData base) {
   );
 }
 
+// Floating Action Button Theme for App
 FloatingActionButtonThemeData getAppFloatingActionsButtonTheme(
     FloatingActionButtonThemeData base) {
   return base.copyWith(
@@ -46,6 +49,7 @@ FloatingActionButtonThemeData getAppFloatingActionsButtonTheme(
   );
 }
 
+// App wide Theme
 ThemeData getAppTheme(ThemeData base) {
   return base.copyWith(
     textTheme: getAppTextTheme(base.textTheme),

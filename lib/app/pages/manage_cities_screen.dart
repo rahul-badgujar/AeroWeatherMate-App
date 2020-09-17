@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
 import 'package:location/location.dart';
 import 'package:air_quality_app/resources/constants.dart' as constants;
+import 'package:air_quality_app/resources/gradients_rsc.dart' as gradients;
 
 class ManageCitiesScreen extends StatefulWidget {
   @override
@@ -33,7 +34,8 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: AppDecorations.gradientBox(),
+            decoration: AppDecorations.gradientBox(
+                gradientTOFill: gradients.defaultGradient),
           ),
           SafeArea(
             child: Padding(

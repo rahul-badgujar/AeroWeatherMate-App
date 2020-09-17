@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// String Constants
 class Strings {
   static const String appName = "AeroWeatherMate";
   static const String defaultTempScale = "C";
@@ -11,6 +12,7 @@ class Strings {
   static const String defaultMainUSPollutant = "o3";
 }
 
+// Numerical Constants
 class Numbers {
   static const double boxRadius = 24.0;
   static const int maxAllowedCities = 5;
@@ -18,6 +20,7 @@ class Numbers {
   static const double bigSvgIconDim = 56;
 }
 
+// Paddings
 class Paddings {
   static const EdgeInsets paddingAll = const EdgeInsets.all(12);
   static const EdgeInsets pageContentsPadding =
@@ -30,6 +33,7 @@ class Paddings {
       const EdgeInsets.symmetric(vertical: 4);
 }
 
+// Margins
 class Margins {
   static const EdgeInsets rectMargin =
       const EdgeInsets.symmetric(horizontal: 6, vertical: 6);
@@ -37,12 +41,15 @@ class Margins {
       const EdgeInsets.symmetric(vertical: 4);
 }
 
+// Colors
 class Colours {
   static const Color circleProgressIndicatorBgColor = Colors.white;
 }
 
+// Enums for HomePage Menu Buttons
 enum HomePagePopupMenuButtons { manage_cities, credits }
 
+// function to get Air Quality from AQI
 String airQualityFromAqi(int aqi) {
   if (0 <= aqi && aqi <= 50)
     return "Good Air";
@@ -58,6 +65,7 @@ String airQualityFromAqi(int aqi) {
     return "Hazardous Air";
 }
 
+// function for get Weather Status from WeatherStatusCode
 String weatherStatusFromWeatherStatusCode(String code) {
   if (code == "01d" || code == "01n")
     return "Clear Sky";
@@ -81,6 +89,7 @@ String weatherStatusFromWeatherStatusCode(String code) {
     return "Clear Sky";
 }
 
+// function to get Wind Direction from WindAngle
 String windDirectionFromAngle(int angle) {
   if (315 < angle || angle < 45)
     return "NORTH";
@@ -94,6 +103,7 @@ String windDirectionFromAngle(int angle) {
     return "NORTH";
 }
 
+// function to get Pollutant type from PollutantCode
 String pollutantFromCode(String code) {
   if (code == "p1")
     return "pm2.5";
@@ -111,6 +121,7 @@ String pollutantFromCode(String code) {
     return "SO2";
 }
 
+// function to convert API Timestamp to Default Format
 String updateStatusFromTimeStamp(String timeStamp) {
   final String year = timeStamp.substring(0, 4);
   final String month = timeStamp.substring(5, 7);
