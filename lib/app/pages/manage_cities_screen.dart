@@ -3,6 +3,7 @@ import 'package:air_quality_app/api/network/http_client.dart';
 import 'package:air_quality_app/services/database_helpers.dart' as dbhelper;
 import 'package:air_quality_app/services/geolocation.dart';
 import 'package:air_quality_app/ui/decorations.dart';
+import 'package:air_quality_app/ui/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart' as ddsearch;
 import 'package:location/location.dart';
@@ -230,7 +231,7 @@ class _ManageCitiesScreenState extends State<ManageCitiesScreen> {
       duration: Duration(seconds: 1),
       content: Text(
         text,
-        style: Theme.of(context).textTheme.subtitle1.copyWith(
+        style: Theme.of(context).textTheme.subtitle2.copyWith(
               color: Colors.black,
             ),
         textAlign: TextAlign.center,
@@ -285,16 +286,19 @@ class _NewCityFormStateDialog extends State<NewCityFormDialog> {
   // builds Form Contents
   Widget _buildFormContents() {
     return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildCountriesSelectionDropdown(),
-          _buildStateSelectionDropdown(),
-          _buildCitySelectionDropdown(),
-          _buildUserLocationRequestButton(),
-          _buildAddCityDataButton(),
-        ],
+      child: Theme(
+        data: getAppThemeLight(Theme.of(context)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildCountriesSelectionDropdown(),
+            _buildStateSelectionDropdown(),
+            _buildCitySelectionDropdown(),
+            _buildUserLocationRequestButton(),
+            _buildAddCityDataButton(),
+          ],
+        ),
       ),
     );
   }

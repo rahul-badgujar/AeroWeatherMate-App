@@ -477,10 +477,9 @@ class _HomeScreenState extends State<HomeScreen> {
       duration: Duration(seconds: 1),
       content: Text(
         text,
-        style: TextStyle(
-          color: Colors.black87,
-          fontSize: 16,
-        ),
+        style: Theme.of(context).textTheme.subtitle2.copyWith(
+              color: Colors.black,
+            ),
         textAlign: TextAlign.center,
       ),
     );
