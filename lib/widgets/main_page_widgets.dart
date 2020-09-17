@@ -3,6 +3,7 @@ import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+// to build TimeStamp Widget
 Widget buildTimeStampWidget(BuildContext context, String timeStamp) {
   return Container(
     child: Text(
@@ -14,6 +15,7 @@ Widget buildTimeStampWidget(BuildContext context, String timeStamp) {
   );
 }
 
+// build Data Value Pair for Info
 Widget buildDataValueDetailWidget(
     BuildContext context, String data, dynamic value, String unit) {
   return Row(
@@ -33,6 +35,7 @@ Widget buildDataValueDetailWidget(
   );
 }
 
+// build Title Data Widget for Full Details Widget
 Widget buildTitleDataWidget(BuildContext context, int data, String unit) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
@@ -58,6 +61,7 @@ Widget buildTitleDataWidget(BuildContext context, int data, String unit) {
   );
 }
 
+// build Short Details Widget
 Widget buildShortDetailWidget(
     BuildContext context, String heading, String iconPath) {
   return Expanded(

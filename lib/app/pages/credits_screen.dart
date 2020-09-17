@@ -35,6 +35,7 @@ class _CreditsScreenState extends State<CreditsScreen> {
     );
   }
 
+  // build Page Contents to show Credits
   Widget _buildPageContents() {
     return Padding(
       padding: constants.Paddings.pageContentsPadding,
@@ -49,6 +50,7 @@ class _CreditsScreenState extends State<CreditsScreen> {
     );
   }
 
+  // Custom App Bar
   Widget _buildCustomAppBar() {
     return Container(
       child: Row(
@@ -76,22 +78,26 @@ class _CreditsScreenState extends State<CreditsScreen> {
     );
   }
 
+  // Developer Credit Widget
   Widget _buildDeveloperCreditsWidget() {
     return _buildCreditsWidget("About Developer",
         "Rahul Badgujar \nSE-IT Student \nPCCoE Pune, Maharashtra");
   }
 
+  // Data Source Credit Widget
   Widget _buildDataSourceCreditsWidget() {
     return _buildCreditsWidget("Live Data", "Source : AirVisual",
         link: "www.iqair.com");
   }
 
+  // Resources Used Credit Widget
   Widget _buildResourcesUsedCreditsWidget() {
     return _buildCreditsWidget(
         "Icon Authors", "Freepik, Pixel Perfect \nGoogle, bqlqn, Iconixer",
         link: "www.flaticon.com");
   }
 
+  // template for Credit Widget
   Widget _buildCreditsWidget(String title, String content, {String link = ""}) {
     return Container(
       padding: constants.Paddings.paddingAll,
@@ -123,6 +129,7 @@ class _CreditsScreenState extends State<CreditsScreen> {
     );
   }
 
+  // text styles
   TextStyle _textStyleForTitle() {
     return Theme.of(context).textTheme.headline5;
   }
