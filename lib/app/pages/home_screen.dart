@@ -15,7 +15,6 @@ import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:location/location.dart';
 import 'package:air_quality_app/resources/gradients_rsc.dart' as gradients;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -31,9 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dbhelper.City> citiesToShow = []; // list of Cities to show in PageViewer
   List<Future<AirVisualData>> _citiesFutureData =
       <Future<AirVisualData>>[]; // Future Data for Cities to Show
-  final PageController _citiesPagesController = PageController(
-      keepPage:
-          true); // page Controller for Cities PageViewer, keepPage=True to save Pages in Memory to reduce Repeated Building overhead
+  final PageController _citiesPagesController =
+      PageController(); // Cities Page Controller
   int currentPage =
       0; // keep track of Current Active Page of Cities PageViewer, used for Refresh Task
 
