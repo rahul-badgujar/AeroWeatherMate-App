@@ -2,6 +2,7 @@ import 'package:air_quality_app/resources/constants.dart' as constants;
 import 'package:air_quality_app/ui/decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 // to build TimeStamp Widget
 Widget buildTimeStampWidget(BuildContext context, String timeStamp) {
@@ -36,26 +37,38 @@ Widget buildDataValueDetailWidget(
 }
 
 // build Title Data Widget for Full Details Widget
-Widget buildTitleDataWidget(BuildContext context, int data, String unit) {
+Widget buildTitleDataWidget(
+    BuildContext context, int data, double dataLimit, String unit) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "$data",
-            style: Theme.of(context).textTheme.headline2.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          Text(
-            unit,
-            style: Theme.of(context).textTheme.subtitle1.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-        ],
+      CircularPercentIndicator(
+        radius: constants.Numbers.circularPercentIndicatorRadius,
+        animation: true,
+        animationDuration:
+            constants.Numbers.circularPercentIndicatorAnimationDuration,
+        lineWidth: constants.Numbers.circularPercentIndicatorLineWidth,
+        percent: data / dataLimit,
+        backgroundColor: constants.Colours.circularPercentIndicatorBgColor,
+        progressColor: constants.Colours.circularPercentIndicatorProgressColor,
+        center: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "$data",
+              style: Theme.of(context).textTheme.headline4.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            Text(
+              unit,
+              style: Theme.of(context).textTheme.bodyText2.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
+          ],
+        ),
       ),
     ],
   );

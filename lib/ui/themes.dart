@@ -8,8 +8,14 @@ TextTheme getAppTextTheme(TextTheme base, {Color textColor = Colors.white}) {
       color: textColor,
       fontSize: 56,
     ),
-    headline3: base.headline3.copyWith(),
-    headline4: base.headline4.copyWith(),
+    headline3: base.headline3.copyWith(
+      color: textColor,
+      fontSize: 30,
+    ),
+    headline4: base.headline4.copyWith(
+      color: textColor,
+      fontSize: 27,
+    ),
     headline5: base.headline5.copyWith(
       color: textColor,
       fontSize: 24,

@@ -135,11 +135,13 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           // if Future has Data ready
-          return Column(
-            children: [
-              _buildCityDetailTitle(snapshot), // build City Title Widget
-              _buildCurrentDataWidget(snapshot), // build Current Data Widget
-            ],
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildCityDetailTitle(snapshot), // build City Title Widget
+                _buildCurrentDataWidget(snapshot), // build Current Data Widget
+              ],
+            ),
           );
         } else {
           // till the Future Data is not ready
@@ -258,21 +260,17 @@ class _HomeScreenState extends State<HomeScreen> {
     String weatherStatusCode = snapshot
         .data.data.current.weather.weatherStatusCode; // get WeatherStatusCode
     int aqiUS = snapshot.data.data.current.pollution.aqiUS; // get AqiUS
-    return SingleChildScrollView(
-      // SingleChildScrollView to scroll through
-
-      child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch, // span the Entire Horizontal Screen
-        children: [
-          _buildShortDetailWidgets(
-              weatherStatusCode, aqiUS), // build Short Details Widgets
-          _buildFullWeatherStatusWidget(
-              snapshot), // build Full Details Weather Widget
-          _buildFullPollutionStatusWidget(
-              snapshot), // build Full Details Pollution Widget
-        ],
-      ),
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.stretch, // span the Entire Horizontal Screen
+      children: [
+        _buildShortDetailWidgets(
+            weatherStatusCode, aqiUS), // build Short Details Widgets
+        _buildFullWeatherStatusWidget(
+            snapshot), // build Full Details Weather Widget
+        _buildFullPollutionStatusWidget(
+            snapshot), // build Full Details Pollution Widget
+      ],
     );
   }
 
@@ -313,6 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // build Title Data Widget
               context,
               snapshot.data.data.current.pollution.aqiUS,
+              constants.Numbers.maxPracticalAqi,
               "aqi"),
           Padding(
             padding: constants.Paddings.paddingSym,
@@ -354,6 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // build title Data Widget
               context,
               snapshot.data.data.current.weather.temprature,
+              constants.Numbers.maxPracticalTemprature,
               "°C"),
           Padding(
             padding: constants.Paddings.paddingSym,

@@ -18,6 +18,11 @@ class Numbers {
   static const int maxAllowedCities = 5;
   static const double smoothControllerDot_dim = 6;
   static const double bigSvgIconDim = 56;
+  static const double circularPercentIndicatorRadius = 100;
+  static const int circularPercentIndicatorAnimationDuration = 1200;
+  static const double circularPercentIndicatorLineWidth = 6;
+  static const double maxPracticalTemprature = 100;
+  static const double maxPracticalAqi = 300;
 }
 
 // Paddings
@@ -44,6 +49,8 @@ class Margins {
 // Colors
 class Colours {
   static const Color circleProgressIndicatorBgColor = Colors.white;
+  static const Color circularPercentIndicatorBgColor = Colors.white30;
+  static const Color circularPercentIndicatorProgressColor = Colors.white;
 }
 
 // Enums for HomePage Menu Buttons
